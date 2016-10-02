@@ -1,0 +1,33 @@
+{
+  "name": "slacktogglreminders",
+  "version": "1.0.0",
+  "description": "Slack bot that handles various reminders and reporting for Toggl",
+  "main": "index.js",
+  "dependencies": {
+    "toggl-api": "^1.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mrking/SlackTogglReminders.git"
+  },
+  "keywords": [
+    "slack",
+    "toggl",
+    "bot",
+    "reminders",
+    "time",
+    "tracking",
+    "timetracking",
+    "time-tracking"
+  ],
+  "author": "Michael King and Tyrone Tan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mrking/SlackTogglReminders/issues"
+  },
+  "homepage": "https://github.com/mrking/SlackTogglReminders#readme"
+}
