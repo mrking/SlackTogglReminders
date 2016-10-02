@@ -49,3 +49,6 @@ getTimeSpent('2016-07-01', '2016-12-01', 'mikerobertking@gmail.com', function(er
 getTimeSpent('2016-07-01', '2016-12-01', 'new.overlord@gmail.com', function(err, time) {
   console.log("got Tyrone's hours: " + time);
 });
+
+
+module.exports = TogglTimeCheck;
