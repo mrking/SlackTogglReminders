@@ -11,14 +11,11 @@ var self = module.exports = {
   // returns a promise for the user object with a parameter of an email address string
   getUser: function(email) {
       if(UsersInToggl[email]) {
-        console.log('used user cache');
         return Promise.resolve(UsersInToggl[email]);
       } else {
         return new Promise(function (resolve, reject) {
             // test ws ID 1382104
             self.getWorkspaceID(Settings.toggleWorkspaceName).then(function(wsID) {
-              console.log(wsID);
-              console.log('wtf');
               toggl.getWorkspaceUsers(wsID, function(err, users) {
                 if(err) {
                   reject (err);
@@ -33,7 +30,9 @@ var self = module.exports = {
                 } else {
                   reject('unable to find ' + email +  ' in toggl');
                 }
-              }, function() { console.error ('Unable to find workspace ID for ' + Settings.toggleWorkspaceName); });
+              });
+            }, function() {
+              console.error ('Unable to find workspace ID for: ' + Settings.toggleWorkspaceName);
             });
         });
       }
@@ -41,7 +40,6 @@ var self = module.exports = {
     // returns a promise for the configured workspace ID in the config file.
     getWorkspaceID: function(workspaceName) {
       if(WorkspaceID != -1) {
-          console.log('used workspace cache');
           return Promise.resolve(WorkspaceID);
       } else {
         return new Promise(function (resolve, reject) {
@@ -49,11 +47,13 @@ var self = module.exports = {
             for (var i = 0; i < workspaces.length; i++) {
 
               if(workspaceName == workspaces[i].name) {
-                WorkspaceID = workspaces[i].id;
-                resolve(WorkspaceID);
-                return;
+                 WorkspaceID = workspaces[i].id;
+                 resolve(WorkspaceID);
                }
-               reject('Unable to find workspace ' + err);
+             }
+
+             if(WorkspaceID == -1 ) {
+               reject('Was unable to find workspace with name: ' +  workspaceName);
              }
            });
         });
@@ -62,13 +62,15 @@ var self = module.exports = {
     // a promise to return a users time.
     getTimeSpent: function (start, end, email) {
       return new Promise(function(resolve, reject) {
-        var user = self.getUser(email);
-        toggl.summaryReport({"grouping": "users", "workspace_id": user.default_wid, "user_ids": users.id, "since": start.toISOString().slice(0,10), "until": end.toISOString().slice(0,10)}, function(err, report) {
+        self.getUser(email).then(function(user) {
+        toggl.summaryReport({"grouping": "users", "workspace_id": user.default_wid, "user_ids": user.id, "since": start.toISOString().slice(0,10), "until": end.toISOString().slice(0,10)}, function(err, report) {
+
           if(err) {
             reject(err);
+          } else {
+            resolve(report.total_grand / 3600000);
           }
-
-          resolve(report.total_grand / 3600000);
+        });
        });
      });
    }
@@ -77,11 +79,12 @@ var self = module.exports = {
 
 
 
-module.exports.getUser('mikerobertking@gmail.com').then(function(response) {
-  console.log("Success!", response);
-}, function(error) {
-  console.error("Failed!", error);
-});
+ console.log('test getTimeSpent for Michael');
+ module.exports.getTimeSpent(new Date(2016,01,01), new Date(), 'mikerobertking@gmail.com').then(function(response) {
+   console.log("Success! Hours spent: ", response);
+ }, function(error) {
+   console.error("Failed!", error);
+ });
 
 
 // example calls
