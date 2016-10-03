@@ -1,10 +1,14 @@
 name: TogglBot
 description: TogglBot
 avatar: avatar.jpg
+slackscopes:
+  - bot
+  - commands
+  - incoming-webhook
 config:
-  name: SLACK_CHANNEL_ID
-  friendly_name: Slack Channel ID
-  info: Default channel where messages are posted
-  default: time-management
-  type: text
-  global: true
+  - name: SLACK_CHANNEL_ID
+    friendly_name: Slack Channel ID
+    info: Default channel where messages are posted
+    default: time-management
+    type: text
+    global: true
