@@ -33,7 +33,7 @@ module.exports = {
                       console.log('stupid error');
                       console.log(err);
                     }
-                    callback(undefined, report.total_grand / 3600000);
+                    callback(null, report.total_grand / 3600000);
                   });
                   foundUser = true;
                   break;
