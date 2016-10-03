@@ -22,10 +22,9 @@ var moment = require('moment');
 var Settings = require('./settings.json');
 var ToggleTimeCheck = require('./togglTestFile.js');
 var team = Settings.teamname;
-var botToken = 'xoxp-26250155218-26230467748-86501391347-80531c377c11505556a87c714406e81b';
 
 
-  slack.users.list({token: botToken}, function(err, data) {
+  slack.users.list({token: token}, function(err, data) {
     if(err) {
       console.log(err);
       throw err;
@@ -46,7 +45,7 @@ var botToken = 'xoxp-26250155218-26230467748-86501391347-80531c377c11505556a87c7
         if (time < Settings.minHours) {
           var text = "You have recorded " + time + " work hours for the week, and are behind the minimum hours by " + (Settings.minHours - time) + " hours";
           //console.log('before post a message');
-          slack.chat.postMessage({token: botToken, channel: Settings.channelID, text: text});
+          slack.chat.postMessage({token: token, channel: Settings.channelID, text: text});
           //console.log(text);
         }
       });
