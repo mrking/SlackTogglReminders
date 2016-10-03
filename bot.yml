@@ -1,6 +1,5 @@
 name: TogglBot
 description: TogglBot
-avatar: avatar.jpg
 slackscopes:
   - bot
   - commands
