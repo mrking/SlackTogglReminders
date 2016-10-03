@@ -15,7 +15,7 @@ bot.started(function(payload) {
 // respond to a user_typing message
 bot.user_typing(function(msg) {
   console.log('several people are coding', msg);
-  slack.chat.postMessage({token: token, channel: "biz-setup", text: "f u"});
+  slack.chat.postMessage({token: token, channel: "bizdev", text: "f u"});
 });
 
 // start listening to the slack team associated to the token
