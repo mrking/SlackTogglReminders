@@ -5,8 +5,8 @@ var Settings = require('./settings.json');
 
 // do something with the rtm.start payload
 bot.started(function(payload) {
-  slack.chat.postMessage({token: token, channel: Settings.channelID, text: 'Did I Start?'});
-  //console.log('payload from rtm.start', payload);
+  //slack.chat.postMessage({token: token, channel: Settings.channelID, text: 'Did I Start?'});
+  console.log('payload from rtm.start', payload);
 });
 
 /*
