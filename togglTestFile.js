@@ -3,51 +3,86 @@ var Settings = require('./settings.json');
 
 var toggl = new TogglClient({apiToken: Settings.toggleAPItoken});
 
-module.exports = {
-  // very inefficient dirty function for getting hours
-  // returns hours
-  getTimeSpent: function (start, end, email, callback) {
-    toggl.getWorkspaces(function(err, workspaces) {
+var UsersInToggl = {};
+var WorkspaceID = -1;
 
-      // dirty throw for now
-      if(err) {
-        throw err;
-      }
 
-      // get workspace names
-      for (var i = 0; i < workspaces.length; i++) {
-        //console.log(workspaces);
-        if(Settings.toggleWorkspaceName.indexOf(workspaces[i].name) > -1) {
-            console.log('found the workspace');
-            // get workspace users
-            toggl.getWorkspaceUsers(workspaces[i].id, function(err, users) {
-              //console.log(users);
-              var foundUser = false;
-              for (var i = 0; i < users.length; i++) {
-                if(users[i].email == email) {
-                  console.log(start.toISOString().slice(0,10));
-                  console.log(end.toISOString().slice(0,10));
-
-                  toggl.summaryReport({"grouping": "users", "workspace_id": users[i].default_wid, "user_ids": users[i].id, "since": start.toISOString().slice(0,10), "until": end.toISOString().slice(0,10)}, function(err, report) {
-                    if(err) {
-                      console.log('stupid error');
-                      console.log(err);
-                    }
-                    callback(null, report.total_grand / 3600000);
-                  });
-                  foundUser = true;
-                  break;
+var self = module.exports = {
+  // returns a promise for the user object with a parameter of an email address string
+  getUser: function(email) {
+      if(UsersInToggl[email]) {
+        console.log('used user cache');
+        return Promise.resolve(UsersInToggl[email]);
+      } else {
+        return new Promise(function (resolve, reject) {
+            // test ws ID 1382104
+            self.getWorkspaceID(Settings.toggleWorkspaceName).then(function(wsID) {
+              console.log(wsID);
+              console.log('wtf');
+              toggl.getWorkspaceUsers(wsID, function(err, users) {
+                if(err) {
+                  reject (err);
                 }
-              }
-              if(!foundUser) {
-                callback("Unable to find user");
-              }
+
+                for (var i = 0; i <  users.length; i++) {
+                  UsersInToggl[users[i].email] = users[i];
+                }
+
+                if(UsersInToggl[email]) {
+                  resolve(UsersInToggl[email]);
+                } else {
+                  reject('unable to find ' + email +  ' in toggl');
+                }
+              }, function() { console.error ('Unable to find workspace ID for ' + Settings.toggleWorkspaceName); });
             });
-        }
+        });
       }
-    });
-  }
-};
+    },
+    // returns a promise for the configured workspace ID in the config file.
+    getWorkspaceID: function(workspaceName) {
+      if(WorkspaceID != -1) {
+          console.log('used workspace cache');
+          return Promise.resolve(WorkspaceID);
+      } else {
+        return new Promise(function (resolve, reject) {
+          toggl.getWorkspaces(function(err, workspaces) {
+            for (var i = 0; i < workspaces.length; i++) {
+
+              if(workspaceName == workspaces[i].name) {
+                WorkspaceID = workspaces[i].id;
+                resolve(WorkspaceID);
+                return;
+               }
+               reject('Unable to find workspace ' + err);
+             }
+           });
+        });
+      }
+    },
+    // a promise to return a users time.
+    getTimeSpent: function (start, end, email) {
+      return new Promise(function(resolve, reject) {
+        var user = self.getUser(email);
+        toggl.summaryReport({"grouping": "users", "workspace_id": user.default_wid, "user_ids": users.id, "since": start.toISOString().slice(0,10), "until": end.toISOString().slice(0,10)}, function(err, report) {
+          if(err) {
+            reject(err);
+          }
+
+          resolve(report.total_grand / 3600000);
+       });
+     });
+   }
+ };
+
+
+
+
+module.exports.getUser('mikerobertking@gmail.com').then(function(response) {
+  console.log("Success!", response);
+}, function(error) {
+  console.error("Failed!", error);
+});
+
 
 // example calls
 /*getTimeSpent('2016-07-01', '2016-12-01', 'mikerobertking@gmail.com', function(err, time) {
