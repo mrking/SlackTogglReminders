@@ -9,12 +9,7 @@ console.log(Object.keys(bot));
 // do something with the rtm.start payload
 bot.started(function(payload) {
   slack.chat.postMessage({token: token, channel: Settings.channelID, text: 'Did I Start?'});
-  console.log('payload from rtm.start', payload);
-});
-
-// respond to a user_typing message
-bot.user_typing(function(msg) {
-  console.log('several people are coding', msg);
+  //console.log('payload from rtm.start', payload);
 });
 
 // start listening to the slack team associated to the token
