@@ -3,17 +3,11 @@ var bot = slack.rtm.client();
 var token = process.env.SLACK_TOKEN;
 var Settings = require('./settings.json');
 
-// logs: ws, started, close, listen, etc... in addition to the RTM event handler methods
-console.log(Object.keys(bot));
-
 // do something with the rtm.start payload
 bot.started(function(payload) {
   slack.chat.postMessage({token: token, channel: Settings.channelID, text: 'Did I Start?'});
   //console.log('payload from rtm.start', payload);
 });
-
-// start listening to the slack team associated to the token
-bot.listen({token:token});
 
 /*
 var moment = require('moment');
