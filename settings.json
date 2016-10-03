@@ -2,7 +2,7 @@
   "toggleAPItoken": "08c9e982a81514314c8494715e0c86c2",
   "toggleWorkspaceName": "Language Exchange Club",
   "toggleProjectNames": [],
-  "teamname": "languageexchangeclub",
+  "slackTeamname": "languageexchangeclub",
   "minHours": 16,
-  "channelID": "time-management"
+  "slackChannelID": "time-management"
 }
