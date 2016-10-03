@@ -18,6 +18,7 @@ bot.user_typing(function(msg) {
 // start listening to the slack team associated to the token
 bot.listen({token:token});
 
+/*
 var moment = require('moment');
 var Settings = require('./settings.json');
 var ToggleTimeCheck = require('./togglTestFile.js');
@@ -51,4 +52,4 @@ var team = Settings.teamname;
       });
     }
   });
-//};
+//};*/
