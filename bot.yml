@@ -2,7 +2,7 @@ name: TogglBot
 description: TogglBot
 avatar: avatar.jpg
 config:
-  - name: SLACK_CHANNEL_ID
+  name: SLACK_CHANNEL_ID
   friendly_name: Slack Channel ID
   info: Default channel where messages are posted
   default: time-management
