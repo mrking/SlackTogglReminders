@@ -36,14 +36,14 @@ bot.started(function(payload) {
             continue;
 
           //console.log(member);
-          ToggleTimeCheck.getTimeSpent(weekBefore, now, member.profile.email, function(err, time) {
+          ToggleTimeCheck.getTimeSpent(weekBefore, now, member.profile.email).then(function(time) {
             if (time < Settings.minHours) {
               var text = "You have recorded " + time + " work hours for the week, and are behind the minimum hours by " + (Settings.minHours - time) + " hours";
               //console.log('before post a message');
               slack.chat.postMessage({token: token, channel: "bizdev", text: text});
               //console.log(text);
             }
-          });
+          }, function(err) { console.log(err); });
         }
       });
     //}
