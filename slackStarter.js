@@ -47,7 +47,7 @@ bot.started(function(payload) {
         }
       });
     //}
-  }, 60000); // 3600000 run once an hour but for testing run every 60 seconds.
+  }, 60000); // 86400000 run once a day but for testing run every 60 seconds.
 });
 
 // respond to a user_typing message
