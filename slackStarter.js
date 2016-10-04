@@ -6,6 +6,7 @@ var Settings = require('./settings.json');
 //dotenv.load();
 var bot = slack.rtm.client();
 var token = process.env.SLACK_TOKEN;
+var slackchannel = process.env.SLACK_CHANNEL_ID;
 
 // do something with the rtm.start payload
 bot.started(function(payload) {
@@ -35,7 +36,7 @@ bot.started(function(payload) {
             if (time < Settings.minHours) {
               var text = "You have recorded " + time + " work hours for the week, and are behind the minimum hours by " + (Settings.minHours - time) + " hours";
               //console.log('before post a message');
-              slack.chat.postMessage({token: token, channel: "bizdev", text: text});
+              slack.chat.postMessage({token: token, channel: slackchannel, text: text});
               //console.log(text);
             }
           }, function(err) { console.log(err); });
