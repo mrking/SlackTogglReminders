@@ -16,7 +16,7 @@ bot.started(function(payload) {
 
   //schedule the toggl notifications at bot init?
   setInterval(function() {
-    if (moment().diff(moment().endOf('week')) <= 3600000) { //if time now is less than one hour to the end of the week, run code
+    //if (moment().diff(moment().endOf('week')) <= 3600000) { //if time now is less than one hour to the end of the week, run code
       console.log(moment());
 
       slack.users.list({token: token}, function(err, data) {
@@ -46,8 +46,8 @@ bot.started(function(payload) {
           });
         }
       });
-    }
-  }, 3600000);
+    //}
+  }, 60000); // 3600000 run once an hour but for testing run every 60 seconds.
 });
 
 // respond to a user_typing message
