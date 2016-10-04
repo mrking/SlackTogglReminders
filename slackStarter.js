@@ -37,6 +37,7 @@ bot.started(function(payload) {
               var text =  member.real_name + " has recorded " + time.toPrecision(3) + " work hours for the week, and are behind the minimum hours by " + (Settings.minHours - time).toPrecision(3) + " hours";
               //console.log('before post a message');
               slack.chat.postMessage({token: token, channel: "bizdev", text: text});
+              slack.chat.postMessage({token: token, channel: member.id, text: text});
               //console.log(text);
             }
           }, function(err) { console.log(err); });
