@@ -1,6 +1,7 @@
 var slack = require('slack');
 var moment = require('moment');
 var ToggleTimeCheck = require('./togglTestFile.js');
+var Settings = require('./settings.json');
 //var dotenv = require('dotenv');
 //dotenv.load();
 var bot = slack.rtm.client();
