@@ -9,8 +9,6 @@ var token = process.env.SLACK_TOKEN;
 
 // do something with the rtm.start payload
 bot.started(function(payload) {
-  console.log('payload from rtm.start', payload);
-
   //schedule the toggl notifications at bot init?
   setInterval(function() {
     //if (moment().diff(moment().endOf('week')) <= 3600000) { //if time now is less than one hour to the end of the week, run code
