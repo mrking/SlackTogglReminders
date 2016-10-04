@@ -44,7 +44,7 @@ bot.started(function(payload) {
         }
       });
     //}
-  }, 86400000); // 86400000 run once a day but for testing run every 60 seconds.
+  }, 360000); // 86400000 run once a day but for testing run every 60 seconds.
 });
 
 // start listening to the slack team associated to the token
