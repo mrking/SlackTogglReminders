@@ -13,7 +13,7 @@ bot.started(function(payload) {
   //schedule the toggl notifications at bot init?
   setInterval(function() {
     //if (moment().diff(moment().endOf('week')) <= 3600000) { //if time now is less than one hour to the end of the week, run code
-      console.log(moment());
+      console.log(new moment());
 
       slack.users.list({token: token}, function(err, data) {
         if(err) {
@@ -33,8 +33,9 @@ bot.started(function(payload) {
 
           //console.log(member);
           ToggleTimeCheck.getTimeSpent(weekBefore, now, member.profile.email).then(function(time) {
+            console.log(member);
             if (time < Settings.minHours) {
-              var text = "You have recorded " + time + " work hours for the week, and are behind the minimum hours by " + (Settings.minHours - time) + " hours";
+              var text =  member.real_name + " has recorded " + time.toPrecision(3) + " work hours for the week, and are behind the minimum hours by " + (Settings.minHours - time).toPrecision(3) + " hours";
               //console.log('before post a message');
               slack.chat.postMessage({token: token, channel: slackchannel, text: text});
               //console.log(text);
@@ -43,7 +44,7 @@ bot.started(function(payload) {
         }
       });
     //}
-  }, 60000); // 86400000 run once a day but for testing run every 60 seconds.
+  }, 600000); // 86400000 run once a day but for testing run every 60 seconds.
 });
 
 // start listening to the slack team associated to the token
