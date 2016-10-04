@@ -36,7 +36,7 @@ bot.started(function(payload) {
             if (time < Settings.minHours) {
               var text =  member.real_name + " has recorded " + time.toPrecision(3) + " work hours for the week, and are behind the minimum hours by " + (Settings.minHours - time).toPrecision(3) + " hours";
               //console.log('before post a message');
-              slack.chat.postMessage({token: token, channel: "bizdev", text: text});
+              slack.chat.postMessage({token: token, channel: "throw-away-channel", text: text});
               slack.chat.postMessage({token: token, channel: member.id, text: text});
               //console.log(text);
             }
@@ -44,7 +44,7 @@ bot.started(function(payload) {
         }
       });
     //}
-  }, 360000); // 86400000 run once a day but for testing run every 60 seconds.
+  }, 86400000); // 86400000 run once a day but for testing run every 60 seconds.
 });
 
 // start listening to the slack team associated to the token
