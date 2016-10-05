@@ -12,9 +12,15 @@ var USER_MIN_HOURS_CHECK_FREQUENCY = process.env.USER_MIN_HOURS_CHECK_FREQUENCY;
 
 // do something with the rtm.start payload
 bot.started(function(payload) {
-    slackAPI.postMessageToChannel(payload); //TEST, to be removed
+    slackAPI.postMessageToChannel("TEST"); //TEST, to be removed
     slackAPI.postMessageToUser('@mikerobertking', 'test');
-    setInterval(RunUserHoursCheck, 300000); // FUTURE CHANGE TO 86400000
+    setInterval(RunUserHoursCheck, 3000000); // FUTURE CHANGE TO 86400000
+});
+
+bot.hello(function(message) {
+  if (ValidateMessage(message)) {
+    slackAPI.postMessageToUser('@tyronetan', 'NOTIFICATIONS STARTED');
+  }
 });
 
 // start listening to the slack team associated to the token
@@ -23,7 +29,8 @@ bot.listen({
 });
 
 function ValidateMessage(message) {
-
+  if (message === "startNotifications")
+    return true;
 }
 
 function RunUserHoursCheck() {
