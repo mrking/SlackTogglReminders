@@ -44,15 +44,16 @@ bot.hello(function(message) {
   }
 });
 
-// start listening to the slack team associated to the token
-bot.listen({
-    token: SLACK_TOKEN
-});
 
 function ValidateMessage(message) {
   console.log(message);
   if (message && (message.startsWith("startNotifications") || message.startsWith("help")))
     return true;*/
+});
+
+// start listening to the slack team associated to the token
+bot.listen({
+    token: SLACK_TOKEN
 });
 
 function RunUserHoursCheck() {
