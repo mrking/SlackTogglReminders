@@ -18,6 +18,7 @@ bot.started(function(payload) {
 });
 
 bot.hello(function(message) {
+  slackAPI.postMessageToChannel('YO! I AM THE TOGGL BOT' + message); //TEST, to be removed
   if (ValidateMessage(message)) {
     slackAPI.postMessageToUser('@tyronetan', 'NOTIFICATIONS STARTED');
   }
