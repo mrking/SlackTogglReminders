@@ -21,7 +21,8 @@ var self = module.exports = {
     slack.chat.postMessage({
         token: SLACK_TOKEN,
         channel: SLACK_CHANNEL_NAME,
-        text: message
+        text: message,
+        as_user: true
     });
   },
   postMessageToUser: function(userName, message) {
@@ -29,7 +30,7 @@ var self = module.exports = {
         token: SLACK_TOKEN,
         channel: userName,
         text: message,
-        as_user: false
+        as_user: true
     });
   }
 };
