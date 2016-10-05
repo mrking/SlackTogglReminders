@@ -12,12 +12,12 @@ var USER_MIN_HOURS_CHECK_FREQUENCY = process.env.USER_MIN_HOURS_CHECK_FREQUENCY;
 
 // do something with the rtm.start payload
 bot.started(function(payload) {
-    slackAPI.postMessageToChannel('YO! I AM THE TOGGL BOT FROM THE BOT.STARTED FUNCTION'); //TEST, to be removed
+    slackAPI.postMessageToChannel('YO! I AM THE TOGGL BOT FUNCTION STARTED'); //TEST, to be removed
     //slackAPI.postMessageToUser('@mikerobertking', 'test'); this works
 });
 
 bot.hello(function(message) {
-  slackAPI.postMessageToChannel('YO! I AM THE TOGGL BOT' + message); //TEST, to be removed
+  slackAPI.postMessageToChannel('YO! I AM THE TOGGL BOT HELLO FROM THE OTHER SIDE'); //TEST, to be removed
   if (ValidateMessage(message)) {
     var commands = message.split();
 
@@ -28,7 +28,7 @@ bot.hello(function(message) {
         if (commands[2] && parseInt(commands[2]) >= 60000) {
           USER_MIN_HOURS_CHECK_FREQUENCY = parseInt(commands[2]);
         }
-        setInterval(RunUserHoursCheck, 3000000); // FUTURE CHANGE TO 86400000
+        setInterval(RunUserHoursCheck, USER_MIN_HOURS_CHECK_FREQUENCY); // FUTURE CHANGE TO 86400000
         break;
       case 'help':
         break;
