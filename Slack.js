@@ -21,6 +21,18 @@ var self = module.exports = {
       });
     });
   },
+  getRealUsers: function() {
+    return new Promise(function(resolve, reject) {
+      self.getUsers().then(function(users) {
+        for (var i = 0; i < users.length; i++) {
+          if(users[i].is_bot) {
+            users.splice(i, 1);
+          }
+        }
+        resolve(users);
+      });
+    });
+  },
   postMessageToChannel: function(message) {
     console.info('posting message to channel: %s', message);
     slack.chat.postMessage({
@@ -52,7 +64,7 @@ var self = module.exports = {
     }
     else if(_sent_notifications[userName][notificationType]) {
       if(new Date() - Math.abs(_sent_notifications[userName][notificationType]) > SLACK_NOTIFICATION_LIMIT_PERIOD) {
-        console.info('User %s already recieved notification type %s in last %i', userName, notificationType, SLACK_NOTIFICATION_LIMIT_PERIOD);
+        console.info('User %s already recieved notification type %s in last %f', userName, notificationType, SLACK_NOTIFICATION_LIMIT_PERIOD);
         return;
       }
     }

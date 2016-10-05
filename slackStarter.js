@@ -1,5 +1,5 @@
 var moment = require('moment');
-var toggl = require('./Toggl.js');
+var togglAPI = require('./Toggl.js');
 var slackAPI = require('./Slack.js');
 var slack = require('slack');
 var bot = slack.rtm.client();
@@ -10,23 +10,17 @@ var SLACK_TOKEN = process.env.SLACK_TOKEN;
 var SLACK_CHANNEL_NAME = process.env.SLACK_CHANNEL_NAME;
 var USER_MIN_HOURS = process.env.USER_MIN_HOURS;
 var USER_MIN_HOURS_CHECK_FREQUENCY = process.env.USER_MIN_HOURS_CHECK_FREQUENCY;  //in milliseconds
+var USER_MIN_HOURS_IN_DAYS = process.env.USER_MIN_HOURS_IN_DAYS;
 
 
 // do something with the rtm.start payload
 bot.started(function(payload) {
     console.log('bot started');
-    RunUserHoursCheck();
     setInterval(RunUserHoursCheck, USER_MIN_HOURS_CHECK_FREQUENCY);
 });
 
 
 bot.message(function(message) {
-  slackAPI.postMessageToChannel('Hello from the other side, I must have called a thousand times');
-  slackAPI.postMessageToUser('@tyronetan', message.text); //this works
-  // isn't working
-  // if(message.channel != SLACK_CHANNEL_NAME) {
-  //  return;
-  //}
 
   if (ValidateMessage(message.text)) {
     var commands = message.text.split(' ');
@@ -62,35 +56,25 @@ bot.listen({
 });
 
 function RunUserHoursCheck() {
+    console.log('Running User Hours Check');
+    var startPeriod = new Date();
+    startPeriod.setDate(startPeriod.getDate() - USER_MIN_HOURS_IN_DAYS);
 
-    slackAPI.getUsers().then(function(members) {
-      //  console.log(response);
-        var now = new moment();
-        var weekBefore = new moment().subtract(7, "days");
-        for (var i = 0; i < members.length; i++) {
-            var member = members[i];
-
-            if (member.is_bot) { // Skip Bots
-                continue;
-            }
-            console.log('making time request');
-
-            toggl.getTimeSpent(weekBefore, now, member.profile.email).then(function(time) {
-                console.log(time);
-                if (time < USER_MIN_HOURS) {
-                    var text = member.real_name + " has recorded " + time.toPrecision(3) + " work hours for the week, and are behind the minimum hours by " + (USER_MIN_HOURS - time).toPrecision(3) + " hours";
-                    slackAPI.sendNotification(member.id, 'USER_MIN_HOURS', text, true);
-                }
+    slackAPI.getRealUsers().then(function(members) {
+       members.forEach(function(member) {
+          togglAPI.getTimeSpent(startPeriod, new Date(), member.profile.email).then(function(time) {
+              if (time < USER_MIN_HOURS) {
+                  var text = member.real_name + " has recorded " + time.toPrecision(3) + " work hours for the week, and are behind the minimum hours by " + (USER_MIN_HOURS - time).toPrecision(3) + " hours of the total " + USER_MIN_HOURS;
+                  slackAPI.sendNotification(member.id, 'USER_MIN_HOURS', text, true);
+              }
             }, function(err) {
-                console.log(err);
-            });
-        }
-    }, function(message) {
-      console.error('RunUserHoursCheck error');
-      console.error(message);
-    });
-}
-
-function RunWeeklyReportsCheck() {
-
+                console.error(err);
+            }
+          );
+        });
+      },
+      function(message) {
+        console.error('RunUserHoursCheck error');
+        console.error(message);
+      });
 }

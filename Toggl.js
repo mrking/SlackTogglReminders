@@ -66,7 +66,6 @@ var self = module.exports = {
       return new Promise(function(resolve, reject) {
         self.getUser(email).then(function(user) {
         toggl.summaryReport({"grouping": "users", "workspace_id": WorkspaceID, "user_ids": user.id, "since": start.toISOString().slice(0,10), "until": end.toISOString().slice(0,10)}, function(err, report) {
-
           if(err) {
             reject(err);
           } else {
@@ -80,14 +79,14 @@ var self = module.exports = {
 
 
 
-
+/*
  console.log('test getTimeSpent for Michael');
  module.exports.getTimeSpent(new Date(2016,01,01), new Date(), 'mikerobertking@gmail.com').then(function(response) {
    console.log("Success! Hours spent: ", response);
  }, function(error) {
    console.error("Failed!", error);
  });
-
+*/
 
 // example calls
 /*getTimeSpent('2016-07-01', '2016-12-01', 'mikerobertking@gmail.com', function(err, time) {
