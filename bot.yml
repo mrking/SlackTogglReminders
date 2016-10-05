@@ -14,7 +14,7 @@ config:
   - name: TOGGL_API_TOKEN
     friendly_name: Toggl API Token
     info: Your toggl API token to access time submission for a workspace
-    type: text
+    type: secret
     global: true
   - name: TOGGL_WORKSPACE_NAME
     friendly_name: Toggl Workspace Name
@@ -29,6 +29,6 @@ config:
   - name: WARNING_LIMIT_PERIOD
     friendly_name: Time between warnings
     info: The number of hours a between warnings to prevent spamming a users
-    type: integer
+    type: text
     default: 24
     global: true
