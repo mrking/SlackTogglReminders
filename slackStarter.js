@@ -24,6 +24,7 @@ bot.message(function(message) {
   //}
 
   if (ValidateMessage(message.text)) {
+    slackAPI.postMessageToUser('@tyronetan', message.text); //this works
     var commands = message.text.split(' ');
 
     switch(message.text) {
