@@ -73,9 +73,10 @@ function RunUserHoursCheck() {
             toggl.getTimeSpent(weekBefore, now, member.profile.email).then(function(time) {
 
                 if (time < USER_MIN_HOURS) {
+                  
                     var text = member.real_name + " has recorded " + time.toPrecision(3) + " work hours for the week, and are behind the minimum hours by " + (USER_MIN_HOURS - time).toPrecision(3) + " hours";
                     //slackAPI.sendNotification(SLACK_CHANNEL_NAME, 'MINIMUM_TIME_DEFICIT', text);
-                    slackAPI.sendNotification(member.id, 'MINIMUM_TIME_DEFICIT', text);
+                    slackAPI.sendNotification(member.id, 'MINIMUM_TIME_DEFICIT', text, true);
                 }
             }, function(err) {
                 console.log(err);

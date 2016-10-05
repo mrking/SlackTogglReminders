@@ -36,7 +36,7 @@ var self = module.exports = {
         as_user: true
     });
   },
-  sendNotification: function(userName, notificationType, message) {
+  sendNotification: function(userName, notificationType, message, alsoSendToChannel) {
     if(!_sent_notifications[userName]) {
       _sent_notifications[userName] = {};
     }
@@ -48,5 +48,6 @@ var self = module.exports = {
     }
     _sent_notifications[userName][notificationType] = new Date();
     self.postMessageToUser(userName, message);
+    self.postMessageToChannel(message);
   }
 };
