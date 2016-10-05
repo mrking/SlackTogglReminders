@@ -12,7 +12,7 @@ var USER_MIN_HOURS_CHECK_FREQUENCY = process.env.USER_MIN_HOURS_CHECK_FREQUENCY;
 
 // do something with the rtm.start payload
 bot.started(function(payload) {
-    slackAPI.postMessageToChannel('YO! I AM THE TOGGL BOT'); //TEST, to be removed
+    slackAPI.postMessageToChannel('YO! I AM THE TOGGL BOT FROM THE BOT.STARTED FUNCTION'); //TEST, to be removed
     //slackAPI.postMessageToUser('@mikerobertking', 'test'); this works
 });
 
