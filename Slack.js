@@ -28,6 +28,9 @@ var self = module.exports = {
         channel: SLACK_CHANNEL_NAME,
         text: message,
         as_user: true
+    }, function(err){
+      if(err)
+      console.error('unable to post message to channel: ' + err);
     });
   },
   postMessageToUser: function(userName, message) {
@@ -37,6 +40,9 @@ var self = module.exports = {
         channel: userName,
         text: message,
         as_user: true
+    }, function(err){
+      if(err)
+      console.error('unable to post message to user: ' + err);
     });
   },
   sendNotification: function(userName, notificationType, message, alsoSendToChannel) {
