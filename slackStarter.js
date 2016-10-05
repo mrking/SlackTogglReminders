@@ -24,10 +24,11 @@ bot.message(function(message) {
   //}
 
   if (ValidateMessage(message.text)) {
+    slackAPI.postMessageToChannel('Hello from the other side, I must have called a thousand times');
     slackAPI.postMessageToUser('@tyronetan', message.text); //this works
     var commands = message.text.split(' ');
 
-    switch(message.text) {
+    switch(commands[0]) {
       case 'startNotifications':    //startNotifications [minHours] [checkFrequency]
         if (commands[1] && parseInt(commands[1])) {
           USER_MIN_HOURS = parseInt(commands[1]);
