@@ -35,7 +35,7 @@ config:
     global: true
   - name: USER_MIN_HOURS_CHECK_FREQUENCY
     friendly_name: Time between checks
-    info: The number of minutes between checking toggl
+    info: The number of milliseconds between checking toggl
     type: text
-    default: 60
+    default: 86400000
     global: true
