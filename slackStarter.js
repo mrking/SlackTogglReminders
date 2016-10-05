@@ -1,6 +1,7 @@
 var moment = require('moment');
 var toggl = require('./Toggl.js');
-var slack = require('./Slack.js');
+var slackAPI = require('./Slack.js');
+var slack = require('slack');
 var bot = slack.rtm.client();
 
 // CONST
@@ -22,7 +23,7 @@ bot.listen({
 });
 
 function RunUserHoursCheck() {
-    slack.getUsers().then(function(response) {
+    slackAPI.getUsers().then(function(response) {
 
         var members = response.members;
         var now = new moment();
@@ -38,8 +39,8 @@ function RunUserHoursCheck() {
 
                 if (time < USER_MIN_HOURS) {
                     var text = member.real_name + " has recorded " + time.toPrecision(3) + " work hours for the week, and are behind the minimum hours by " + (USER_MIN_HOURS - time).toPrecision(3) + " hours";
-                    slack.postMessageToChannel(SLACK_CHANNEL_NAME, text);
-                    slack.postMessageToChannel(member.id, text);
+                    slackAPI.postMessageToChannel(SLACK_CHANNEL_NAME, text);
+                    slackAPI.postMessageToChannel(member.id, text);
                 }
             }, function(err) {
                 console.log(err);
