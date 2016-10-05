@@ -44,7 +44,7 @@ bot.listen({
 });
 
 function ValidateMessage(message) {
-  console.log(typeof message);
+  console.log(message);
   if (message && (message.startsWith("startNotifications") || message.startsWith("help")))
     return true;
 }
