@@ -12,14 +12,21 @@ var USER_MIN_HOURS_CHECK_FREQUENCY = process.env.USER_MIN_HOURS_CHECK_FREQUENCY;
 // do something with the rtm.start payload
 bot.started(function(payload) {
     // Schedule Bot To Run User Check Every Day+
-    slack.chat.postMessage({token: SLACK_TOKEN, channel: SLACK_CHANNEL_NAME, text: payload}); //TEST, to be removed
-    setInterval(RunUserHoursCheck, 300000); // FUTURE CHANGE TO 86400000
+    setInterval(RunUserHoursCheck, 86400000); // FUTURE CHANGE TO 86400000
+});
+
+bot.hello(message => {
+
 });
 
 // start listening to the slack team associated to the token
 bot.listen({
     token: SLACK_TOKEN
 });
+
+function ValidateMessage(message) {
+
+}
 
 function RunUserHoursCheck() {
     slack.users.list({
