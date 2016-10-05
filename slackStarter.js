@@ -10,6 +10,7 @@ var token = process.env.SLACK_TOKEN;
 // do something with the rtm.start payload
 bot.started(function(payload) {
   //schedule the toggl notifications at bot init?
+  slack.chat.postMessage({token: token, channel: "throw-away-channel", text: payload});
   setInterval(function() {
     //if (moment().diff(moment().endOf('week')) <= 3600000) { //if time now is less than one hour to the end of the week, run code
       console.log(new moment());
@@ -44,7 +45,7 @@ bot.started(function(payload) {
         }
       });
     //}
-  }, 86400000); // 86400000 run once a day but for testing run every 60 seconds.
+  }, 864000); // 86400000 run once a day but for testing run every 60 seconds.
 });
 
 // start listening to the slack team associated to the token
