@@ -1,5 +1,4 @@
 var TogglClient = require('toggl-api');
-var Settings = require('./settings.json');
 
 // CONST
 var TOGGL_WORKSPACE_NAME = process.env.TOGGL_WORKSPACE_NAME;
@@ -35,7 +34,7 @@ var self = module.exports = {
                 }
               });
             }, function() {
-              console.error ('Unable to find workspace ID for: ' + Settings.toggleWorkspaceName);
+              console.error ('Unable to find workspace ID for: ' + TOGGL_WORKSPACE_NAME);
             });
         });
       }

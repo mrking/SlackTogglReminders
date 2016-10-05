@@ -1,5 +1,6 @@
 name: TogglBot
 description: TogglBot
+email: togglbot@languageexchange.club
 slackscopes:
   - bot
   - commands
@@ -31,4 +32,10 @@ config:
     info: The number of hours a between warnings to prevent spamming a users
     type: text
     default: 24
+    global: true
+  - name: USER_MIN_HOURS_CHECK_FREQUENCY
+    friendly_name: Time between checks
+    info: The number of minutes between checking toggl
+    type: text
+    default: 60
     global: true
