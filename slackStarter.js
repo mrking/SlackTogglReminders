@@ -25,24 +25,19 @@ bot.message(function(message) {
 
   if (ValidateMessage(message.text)) {
     var commands = message.text.split(' ');
-    if(message.text=='help') {
-        slackAPI.postMessageToChannel('f u I don\'t help');
-    }
 
-    switch(commands[1]) {
-      case 'USER_MIN_HOURS':    //startNotifications [minHours] [checkFrequency]
+    switch(message.text) {
+      case 'startNotifications':    //startNotifications [minHours] [checkFrequency]
+        if (commands[1] && parseInt(commands[1])) {
+          USER_MIN_HOURS = parseInt(commands[1]);
+        }   //since the [minHours] parameter is an optional field, allow them to ignore the parameter or write the wrogn flags
         if (commands[2] && parseInt(commands[2])) {
-          USER_MIN_HOURS = parseInt(commands[2]);
-        } else {
-          slackAPI.postMessageToChannel('incorrect parameters for USER_MIN_HOURS');
-        }
+            USER_MIN_HOURS_CHECK_FREQUENCY = parseInt(commands[2]);
+        } //since the [minHours] parameter is an optional field, allow them to ignore the parameter or write the wrogn flags
+        setInterval(RunUserHoursCheck, USER_MIN_HOURS_CHECK_FREQUENCY);
         break;
-      case 'USER_MIN_HOURS_CHECK_FREQUENCY':
-        if (commands[2] && parseInt(commands[2])) {
-          USER_MIN_HOURS_CHECK_FREQUENCY = parseInt(commands[2]);
-        } else {
-          slackAPI.postMessageToChannel('incorrect parameters for USER_MIN_HOURS_CHECK_FREQUENCY');
-        }
+      case 'help':
+        slackAPI.postMessageToChannel('f u I don\'t help');
         break;
       default:
         break;
@@ -52,7 +47,7 @@ bot.message(function(message) {
 
 
 function ValidateMessage(message) {
-  if (message && (message.startsWith("set") || message.startsWith("help")))
+  if (message && (message.startsWith("startNotifications") || message.startsWith("help")))
     return true;
 }
 
