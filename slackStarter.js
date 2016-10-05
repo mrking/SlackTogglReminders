@@ -4,8 +4,6 @@ var slackAPI = require('./Slack.js');
 var slack = require('slack');
 var bot = slack.rtm.client();
 
-var botkit = require('botkit');
-var BeepBoop = require('beepboop-botkit');
 
 // CONST
 var SLACK_TOKEN = process.env.SLACK_TOKEN;
@@ -13,11 +11,6 @@ var SLACK_CHANNEL_NAME = process.env.SLACK_CHANNEL_NAME;
 var USER_MIN_HOURS = process.env.USER_MIN_HOURS;
 var USER_MIN_HOURS_CHECK_FREQUENCY = process.env.USER_MIN_HOURS_CHECK_FREQUENCY;  //in milliseconds
 
-
-
-//BEEPBOOP TOOLKIT TRIAL
-var controller = botkit.slackbot();
-var beepboop = BeepBoop.start(controller);
 
 controller.hears(['help'], ['direct_message', 'direct_mention'], function (bota, evt) {
   var help = 'I am an efficient little bot. All you need is a single instance of me to handle ' +
