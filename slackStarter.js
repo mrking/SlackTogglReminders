@@ -15,6 +15,7 @@ bot.started(function(payload) {
     console.log('bot started');
     //slackAPI.postMessageToChannel('YO! I AM THE TOGGL BOT FUNCTION STARTED'); //TEST, to be removed
     //slackAPI.postMessageToUser('@mikerobertking', 'test'); this works
+    setInterval(function(){},100000); // keep alive
 });
 
 bot.hello(function(message) {
