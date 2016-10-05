@@ -8,7 +8,7 @@ var bot = slack.rtm.client();
 var SLACK_TOKEN = process.env.SLACK_TOKEN;
 var SLACK_CHANNEL_NAME = process.env.SLACK_CHANNEL_NAME;
 var USER_MIN_HOURS = process.env.USER_MIN_HOURS;
-var USER_MIN_HOURS_CHECK_FREQUENCY = process.env.USER_MIN_HOURS_CHECK_FREQUENCY;
+var USER_MIN_HOURS_CHECK_FREQUENCY = process.env.USER_MIN_HOURS_CHECK_FREQUENCY;  //in milliseconds
 
 // do something with the rtm.start payload
 bot.started(function(payload) {
@@ -20,6 +20,14 @@ bot.started(function(payload) {
 bot.hello(function(message) {
   slackAPI.postMessageToChannel('YO! I AM THE TOGGL BOT' + message); //TEST, to be removed
   if (ValidateMessage(message)) {
+    var commands = message.split();
+
+    switch(commands[0]) {
+      case 'startNotifications':    //startNotifications [minHours] [checkFrequency]
+        break;
+      case 'help':
+        break;
+    }
     slackAPI.postMessageToUser('@tyronetan', 'NOTIFICATIONS STARTED');
   }
 });
@@ -30,7 +38,7 @@ bot.listen({
 });
 
 function ValidateMessage(message) {
-  if (message === "startNotifications")
+  if (message === "startNotifications" || message === "help")
     return true;
 }
 
