@@ -21,14 +21,14 @@ var self = module.exports = {
     slack.chat.postMessage({
         token: SLACK_TOKEN,
         channel: SLACK_CHANNEL_NAME,
-        text: text
+        text: message
     });
   },
   postMessageToUser: function(userName, message) {
     slack.chat.postMessage({
         token: SLACK_TOKEN,
         channel: userName,
-        text: text,
+        text: message,
         as_user: false
     });
   }
