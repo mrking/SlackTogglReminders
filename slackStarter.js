@@ -31,8 +31,10 @@ controller.hears(['help'], ['direct_message', 'direct_mention'], function (bota,
 // do something with the rtm.start payload
 bot.started(function(payload) {
     console.log('bot started');
+    RunUserHoursCheck();
     setInterval(RunUserHoursCheck, USER_MIN_HOURS_CHECK_FREQUENCY);
 });
+
 
 bot.message(function(message) {
   slackAPI.postMessageToChannel('Hello from the other side, I must have called a thousand times');
@@ -65,7 +67,6 @@ bot.message(function(message) {
   }
 });
 
-
 function ValidateMessage(message) {
   if (message && (message.startsWith("startNotifications") || message.startsWith("help")))
     return true;
@@ -77,29 +78,32 @@ bot.listen({
 });
 
 function RunUserHoursCheck() {
-    slackAPI.getUsers().then(function(response) {
 
-        var members = response.members;
+    slackAPI.getUsers().then(function(members) {
+      //  console.log(response);
         var now = new moment();
         var weekBefore = new moment().subtract(7, "days");
-
         for (var i = 0; i < members.length; i++) {
             var member = members[i];
+
             if (member.is_bot) { // Skip Bots
                 continue;
             }
+            console.log('making time request');
 
             toggl.getTimeSpent(weekBefore, now, member.profile.email).then(function(time) {
-
+                console.log(time);
                 if (time < USER_MIN_HOURS) {
                     var text = member.real_name + " has recorded " + time.toPrecision(3) + " work hours for the week, and are behind the minimum hours by " + (USER_MIN_HOURS - time).toPrecision(3) + " hours";
-                    //slackAPI.sendNotification(SLACK_CHANNEL_NAME, 'MINIMUM_TIME_DEFICIT', text);
-                    slackAPI.sendNotification(member.id, 'MINIMUM_TIME_DEFICIT', text);
+                    slackAPI.sendNotification(member.id, 'USER_MIN_HOURS', text, true);
                 }
             }, function(err) {
                 console.log(err);
             });
         }
+    }, function(message) {
+      console.error('RunUserHoursCheck error');
+      console.error(message);
     });
 }
 
