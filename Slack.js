@@ -88,7 +88,7 @@ var self = module.exports = {
   },
   postMessageToUser: function(userName, message) {
     console.info('posting message to user %s: %s', userName, message);
-    self.postMessageToChannel(userName, message);
+    self.postMessageToChannel(message, userName);
   },
   sendNotification: function(userName, notificationType, message, alsoSendToChannel) {
 
