@@ -18,7 +18,7 @@ bot.started(function(payload) {
     setInterval(function(){},100000); // keep alive
 });
 
-bot.on('message', function(m) {
+slack.on('message', function(m) {
   console.log('message');
   console.log(m);
 });
