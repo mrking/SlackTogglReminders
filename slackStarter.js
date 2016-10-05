@@ -34,11 +34,11 @@ bot.message(function(message) {
             // do some stuff in here
           }
           else {
-            slackAPI.postMessageToChannel('To get a time report on a user type "report USER_NAME" (e.g. "report mikerobertking")', message.channel)
+            slackAPI.postMessageToChannel('To get a time report on a user type "report [USER_NAME]" (e.g. "report mikerobertking")', message.channel)
           }
           break;
         case 'help':
-          slackAPI.postMessageToChannel('*\n* The following commands are available:\n* set (an environment variable)\n* report (on a user)', message.channel);
+          slackAPI.postMessageToChannel('The following commands are available:\n* report [USER_NAME]; (time report on a user)', message.channel);
           break;
         default:
           slackAPI.postMessageToChannel('Unknown Command: say "help" for commands', message.channel);
