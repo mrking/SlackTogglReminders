@@ -1,10 +1,13 @@
 var TogglClient = require('toggl-api');
 var Settings = require('./settings.json');
 
-var toggl = new TogglClient({apiToken: Settings.toggleAPItoken});
+// CONST
+var TOGGL_WORKSPACE_NAME = process.env.TOGGL_WORKSPACE_NAME;
+var TOGGL_API_TOKEN = process.env.TOGGL_API_TOKEN;
 
 var UsersInToggl = {};
 var WorkspaceID = -1;
+var toggl = new TogglClient({apiToken: TOGGL_API_TOKEN});
 
 
 var self = module.exports = {
@@ -15,7 +18,7 @@ var self = module.exports = {
       } else {
         return new Promise(function (resolve, reject) {
             // test ws ID 1382104
-            self.getWorkspaceID(Settings.toggleWorkspaceName).then(function(wsID) {
+            self.getWorkspaceID(TOGGL_WORKSPACE_NAME).then(function(wsID) {
               toggl.getWorkspaceUsers(wsID, function(err, users) {
                 if(err) {
                   reject (err);
@@ -63,7 +66,7 @@ var self = module.exports = {
     getTimeSpent: function (start, end, email) {
       return new Promise(function(resolve, reject) {
         self.getUser(email).then(function(user) {
-        toggl.summaryReport({"grouping": "users", "workspace_id": user.default_wid, "user_ids": user.id, "since": start.toISOString().slice(0,10), "until": end.toISOString().slice(0,10)}, function(err, report) {
+        toggl.summaryReport({"grouping": "users", "workspace_id": WorkspaceID, "user_ids": user.id, "since": start.toISOString().slice(0,10), "until": end.toISOString().slice(0,10)}, function(err, report) {
 
           if(err) {
             reject(err);
