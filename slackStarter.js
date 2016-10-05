@@ -18,14 +18,14 @@ bot.started(function(payload) {
 });
 
 bot.message(function(message) {
+  slackAPI.postMessageToChannel('Hello from the other side, I must have called a thousand times');
+  slackAPI.postMessageToUser('@tyronetan', message.text); //this works
   // isn't working
   // if(message.channel != SLACK_CHANNEL_NAME) {
   //  return;
   //}
 
   if (ValidateMessage(message.text)) {
-    slackAPI.postMessageToChannel('Hello from the other side, I must have called a thousand times');
-    slackAPI.postMessageToUser('@tyronetan', message.text); //this works
     var commands = message.text.split(' ');
 
     switch(commands[0]) {
