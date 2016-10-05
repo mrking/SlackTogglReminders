@@ -12,11 +12,16 @@ var USER_MIN_HOURS_CHECK_FREQUENCY = process.env.USER_MIN_HOURS_CHECK_FREQUENCY;
 
 // do something with the rtm.start payload
 bot.started(function(payload) {
-    slackAPI.postMessageToChannel('YO! I AM THE TOGGL BOT FUNCTION STARTED'); //TEST, to be removed
+    console.log('bot started');
+    //slackAPI.postMessageToChannel('YO! I AM THE TOGGL BOT FUNCTION STARTED'); //TEST, to be removed
     //slackAPI.postMessageToUser('@mikerobertking', 'test'); this works
 });
 
 bot.hello(function(message) {
+  console.log('hello message');
+  console.log(message);
+
+  /*
   slackAPI.postMessageToChannel('YO! I AM THE TOGGL BOT HELLO FROM THE OTHER SIDE'); //TEST, to be removed
   if (ValidateMessage(message)) {
     var commands = message.split();
@@ -46,8 +51,8 @@ bot.listen({
 function ValidateMessage(message) {
   console.log(message);
   if (message && (message.startsWith("startNotifications") || message.startsWith("help")))
-    return true;
-}
+    return true;*/
+});
 
 function RunUserHoursCheck() {
     slackAPI.getUsers().then(function(response) {
