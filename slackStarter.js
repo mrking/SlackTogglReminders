@@ -13,8 +13,7 @@ var USER_MIN_HOURS_CHECK_FREQUENCY = process.env.USER_MIN_HOURS_CHECK_FREQUENCY;
 // do something with the rtm.start payload
 bot.started(function(payload) {
     console.log('bot started');
-    //slackAPI.postMessageToChannel('YO! I AM THE TOGGL BOT FUNCTION STARTED'); //TEST, to be removed
-    //slackAPI.postMessageToUser('@mikerobertking', 'test'); this works
+    setInterval(RunUserHoursCheck, USER_MIN_HOURS_CHECK_FREQUENCY);
 });
 
 bot.message(function(message) {
@@ -75,8 +74,8 @@ function RunUserHoursCheck() {
 
                 if (time < USER_MIN_HOURS) {
                     var text = member.real_name + " has recorded " + time.toPrecision(3) + " work hours for the week, and are behind the minimum hours by " + (USER_MIN_HOURS - time).toPrecision(3) + " hours";
-                    slackAPI.postMessageToChannel(SLACK_CHANNEL_NAME, text);
-                    slackAPI.postMessageToChannel(member.id, text);
+                    //slackAPI.sendNotification(SLACK_CHANNEL_NAME, 'MINIMUM_TIME_DEFICIT', text);
+                    slackAPI.sendNotification(member.id, 'MINIMUM_TIME_DEFICIT', text);
                 }
             }, function(err) {
                 console.log(err);
