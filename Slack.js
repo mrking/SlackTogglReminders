@@ -15,7 +15,8 @@ var self = module.exports = {
             reject(err);
             return;
         } else {
-          return data.members;
+          resolve(data.members);
+          return;
         }
       });
     });
@@ -39,7 +40,7 @@ var self = module.exports = {
     });
   },
   sendNotification: function(userName, notificationType, message, alsoSendToChannel) {
-    
+
     if(!_sent_notifications[userName]) {
       _sent_notifications[userName] = {};
     }
