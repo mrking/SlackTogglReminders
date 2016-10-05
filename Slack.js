@@ -17,7 +17,7 @@ var self = module.exports = {
       });
     });
   },
-  postMessageToChannel: function(channelName, message) {
+  postMessageToChannel: function(message) {
     slack.chat.postMessage({
         token: SLACK_TOKEN,
         channel: SLACK_CHANNEL_NAME,
@@ -25,5 +25,11 @@ var self = module.exports = {
     });
   },
   postMessageToUser: function(userName, message) {
+    slack.chat.postMessage({
+        token: SLACK_TOKEN,
+        channel: userName,
+        text: text,
+        as_user: false
+    });
   }
 };
