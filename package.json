@@ -4,13 +4,8 @@
   "description": "Slack bot that handles various reminders and reporting for Toggl",
   "main": "index.js",
   "dependencies": {
-    "beepboop-botkit": "^1.4.1",
-    "botkit": "^0.2.2",
-    "moment": "^2.15.1",
     "slack": "^7.7.3",
-    "slack-client": "^2.0.6",
     "toggl-api": "^1.0.0",
-    "xmlhttprequest": "^1.8.0"
   },
   "devDependencies": {},
   "scripts": {
