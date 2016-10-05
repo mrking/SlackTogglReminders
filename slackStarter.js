@@ -14,7 +14,6 @@ var USER_MIN_HOURS_CHECK_FREQUENCY = process.env.USER_MIN_HOURS_CHECK_FREQUENCY;
 bot.started(function(payload) {
     slackAPI.postMessageToChannel('YO! I AM THE TOGGL BOT'); //TEST, to be removed
     //slackAPI.postMessageToUser('@mikerobertking', 'test'); this works
-    setInterval(RunUserHoursCheck, 3000000); // FUTURE CHANGE TO 86400000
 });
 
 bot.hello(function(message) {
@@ -24,6 +23,12 @@ bot.hello(function(message) {
 
     switch(commands[0]) {
       case 'startNotifications':    //startNotifications [minHours] [checkFrequency]
+        if (commands[1] && parseInt(commands[1]))
+          USER_MIN_HOURS = parseInt(commands[1]);
+        if (commands[2] && parseInt(commands[2]) >= 60000) {
+          USER_MIN_HOURS_CHECK_FREQUENCY = parseInt(commands[2]);
+        }
+        setInterval(RunUserHoursCheck, 3000000); // FUTURE CHANGE TO 86400000
         break;
       case 'help':
         break;
@@ -38,7 +43,7 @@ bot.listen({
 });
 
 function ValidateMessage(message) {
-  if (message === "startNotifications" || message === "help")
+  if (message && (message.startsWith("startNotifications") || message.startsWith("help")))
     return true;
 }
 
