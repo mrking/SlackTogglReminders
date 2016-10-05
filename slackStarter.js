@@ -13,8 +13,7 @@ var USER_MIN_HOURS_CHECK_FREQUENCY = process.env.USER_MIN_HOURS_CHECK_FREQUENCY;
 // do something with the rtm.start payload
 bot.started(function(payload) {
     console.log('bot started');
-
-    setInterval(RunUserHoursCheck, 60000);
+    setInterval(RunUserHoursCheck, USER_MIN_HOURS_CHECK_FREQUENCY);
 });
 
 bot.message(function(message) {

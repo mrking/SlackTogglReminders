@@ -12,6 +12,12 @@ config:
     default: time-management
     type: text
     global: true
+  - name: SLACK_NOTIFICATION_LIMIT_PERIOD
+    friendly_name: Time between warnings
+    info: The number of hours a between warnings to prevent spamming a users
+    type: text
+    default: 24
+    global: true
   - name: TOGGL_API_TOKEN
     friendly_name: Toggl API Token
     info: Your toggl API token to access time submission for a workspace
@@ -26,12 +32,6 @@ config:
     friendly_name: Required Hours Per Period
     info: The number of hours a user must log before warning is sent
     type: text
-    global: true
-  - name: WARNING_LIMIT_PERIOD
-    friendly_name: Time between warnings
-    info: The number of hours a between warnings to prevent spamming a users
-    type: text
-    default: 24
     global: true
   - name: USER_MIN_HOURS_CHECK_FREQUENCY
     friendly_name: Time between checks
