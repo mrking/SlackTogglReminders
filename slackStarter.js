@@ -1,6 +1,6 @@
-var slack = require('slack');
 var moment = require('moment');
-var ToggleTimeCheck = require('./Toggl.js');
+var toggl = require('./Toggl.js');
+var slack = require('./Slack.js');
 var bot = slack.rtm.client();
 
 // CONST
@@ -21,40 +21,24 @@ bot.listen({
 });
 
 function RunUserHoursCheck() {
-    slack.users.list({
-        token: SLACK_TOKEN
-    }, function(err, data) {
-        if (err) {
-            console.log(err);
-            throw err;
-        }
+    slack.getUsers().then(function(response) {
 
-        var members = data.members;
+        var members = response.members;
         var now = new moment();
         var weekBefore = new moment().subtract(7, "days");
 
         for (var i = 0; i < members.length; i++) {
             var member = members[i];
-
             if (member.is_bot) { // Skip Bots
                 continue;
             }
 
-            ToggleTimeCheck.getTimeSpent(weekBefore, now, member.profile.email).then(function(time) {
+            toggl.getTimeSpent(weekBefore, now, member.profile.email).then(function(time) {
 
                 if (time < USER_MIN_HOURS) {
                     var text = member.real_name + " has recorded " + time.toPrecision(3) + " work hours for the week, and are behind the minimum hours by " + (USER_MIN_HOURS - time).toPrecision(3) + " hours";
-                    slack.chat.postMessage({
-                        token: SLACK_TOKEN,
-                        channel: SLACK_CHANNEL_NAME,
-                        text: text
-                    });
-                    slack.chat.postMessage({
-                        token: SLACK_TOKEN,
-                        channel: member.id,
-                        text: text
-                    });
-
+                    slack.postMessageToChannel(SLACK_CHANNEL_NAME, text);
+                    slack.postMessageToChannel(member.id, text);
                 }
             }, function(err) {
                 console.log(err);
