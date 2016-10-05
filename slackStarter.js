@@ -18,9 +18,9 @@ bot.started(function(payload) {
     setInterval(function(){},100000); // keep alive
 });
 
-bot.message.channels(function(message) {
-  console.log('message:');
-  console.log(message);
+bot.on('message', function(m) {
+  console.log('message');
+  console.log(m);
 });
 
 bot.hello(function(message) {
