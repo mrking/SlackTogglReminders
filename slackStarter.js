@@ -12,7 +12,6 @@ var USER_MIN_HOURS_CHECK_FREQUENCY = process.env.USER_MIN_HOURS_CHECK_FREQUENCY;
 
 // do something with the rtm.start payload
 bot.started(function(payload) {
-    // Schedule Bot To Run User Check Every Day+
     slackAPI.postMessageToChannel(payload); //TEST, to be removed
     slackAPI.postMessageToUser('@mikerobertking', 'test');
     setInterval(RunUserHoursCheck, 300000); // FUTURE CHANGE TO 86400000
@@ -22,6 +21,10 @@ bot.started(function(payload) {
 bot.listen({
     token: SLACK_TOKEN
 });
+
+function ValidateMessage(message) {
+
+}
 
 function RunUserHoursCheck() {
     slackAPI.getUsers().then(function(response) {
