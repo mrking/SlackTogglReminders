@@ -21,6 +21,7 @@ var self = module.exports = {
     });
   },
   postMessageToChannel: function(message) {
+    console.info('posting message to channel: %s', message);
     slack.chat.postMessage({
         token: SLACK_TOKEN,
         channel: SLACK_CHANNEL_NAME,
@@ -29,6 +30,7 @@ var self = module.exports = {
     });
   },
   postMessageToUser: function(userName, message) {
+    console.info('posting message to user %s: %s', userName, message);
     slack.chat.postMessage({
         token: SLACK_TOKEN,
         channel: userName,
@@ -37,6 +39,7 @@ var self = module.exports = {
     });
   },
   sendNotification: function(userName, notificationType, message, alsoSendToChannel) {
+    
     if(!_sent_notifications[userName]) {
       _sent_notifications[userName] = {};
     }
@@ -48,6 +51,8 @@ var self = module.exports = {
     }
     _sent_notifications[userName][notificationType] = new Date();
     self.postMessageToUser(userName, message);
-    self.postMessageToChannel(message);
+    if(alsoSendToChannel) {
+      self.postMessageToChannel(message);
+    }
   }
 };

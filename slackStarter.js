@@ -15,7 +15,7 @@ bot.started(function(payload) {
     console.log('bot started');
     setInterval(RunUserHoursCheck, USER_MIN_HOURS_CHECK_FREQUENCY);
 });
-
+/*
 bot.message(function(message) {
   slackAPI.postMessageToChannel('Hello from the other side, I must have called a thousand times');
   slackAPI.postMessageToUser('@tyronetan', message.text); //this works
@@ -45,7 +45,7 @@ bot.message(function(message) {
     }
   }
 });
-
+*/
 
 function ValidateMessage(message) {
   if (message && (message.startsWith("startNotifications") || message.startsWith("help")))
@@ -73,10 +73,9 @@ function RunUserHoursCheck() {
             toggl.getTimeSpent(weekBefore, now, member.profile.email).then(function(time) {
 
                 if (time < USER_MIN_HOURS) {
-                  
+
                     var text = member.real_name + " has recorded " + time.toPrecision(3) + " work hours for the week, and are behind the minimum hours by " + (USER_MIN_HOURS - time).toPrecision(3) + " hours";
-                    //slackAPI.sendNotification(SLACK_CHANNEL_NAME, 'MINIMUM_TIME_DEFICIT', text);
-                    slackAPI.sendNotification(member.id, 'MINIMUM_TIME_DEFICIT', text, true);
+                    slackAPI.sendNotification(member.id, 'USER_MIN_HOURS', text, true);
                 }
             }, function(err) {
                 console.log(err);
