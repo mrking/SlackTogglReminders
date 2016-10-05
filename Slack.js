@@ -51,7 +51,7 @@ var self = module.exports = {
       _sent_notifications[userName] = {};
     }
     else if(_sent_notifications[userName][notificationType]) {
-      if(new Date() - Math.abs(_sent_notifications[userName][notificationType]) < SLACK_NOTIFICATION_LIMIT_PERIOD) {
+      if(new Date() - Math.abs(_sent_notifications[userName][notificationType]) > SLACK_NOTIFICATION_LIMIT_PERIOD) {
         console.info('User %s already recieved notification type %s in last %i', userName, notificationType, SLACK_NOTIFICATION_LIMIT_PERIOD);
         return;
       }
