@@ -18,6 +18,11 @@ bot.started(function(payload) {
     setInterval(function(){},100000); // keep alive
 });
 
+bot.message.channels(function(message) {
+  console.log('message:');
+  console.log(message);
+});
+
 bot.hello(function(message) {
   console.log('hello message');
   console.log(message);
