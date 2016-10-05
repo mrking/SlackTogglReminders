@@ -15,7 +15,7 @@ bot.started(function(payload) {
     console.log('bot started');
     setInterval(RunUserHoursCheck, USER_MIN_HOURS_CHECK_FREQUENCY);
 });
-/*
+
 bot.message(function(message) {
   slackAPI.postMessageToChannel('Hello from the other side, I must have called a thousand times');
   slackAPI.postMessageToUser('@tyronetan', message.text); //this works
@@ -46,7 +46,6 @@ bot.message(function(message) {
     }
   }
 });
-*/
 
 function ValidateMessage(message) {
   if (message && (message.startsWith("startNotifications") || message.startsWith("help")))
