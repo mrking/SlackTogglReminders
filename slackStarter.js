@@ -15,46 +15,46 @@ bot.started(function(payload) {
     console.log('bot started');
     //slackAPI.postMessageToChannel('YO! I AM THE TOGGL BOT FUNCTION STARTED'); //TEST, to be removed
     //slackAPI.postMessageToUser('@mikerobertking', 'test'); this works
-    setInterval(function(){},100000); // keep alive
 });
 
-bot.message(function(m) {
-  console.log('message');
-  console.log(m);
-});
+bot.message(function(message) {
+  // isn't working
+  // if(message.channel != SLACK_CHANNEL_NAME) {
+  //  return;
+  //}
 
-bot.hello(function(message) {
-  console.log('hello message');
-  console.log(message);
+  if (ValidateMessage(message.text)) {
+    var commands = message.text.split(' ');
+    if(message.text=='help') {
+        slackAPI.postMessageToChannel('f u I don\'t help');
+    }
 
-  /*
-  slackAPI.postMessageToChannel('YO! I AM THE TOGGL BOT HELLO FROM THE OTHER SIDE'); //TEST, to be removed
-  if (ValidateMessage(message)) {
-    var commands = message.split();
-
-    switch(commands[0]) {
-      case 'startNotifications':    //startNotifications [minHours] [checkFrequency]
-        if (commands[1] && parseInt(commands[1]))
-          USER_MIN_HOURS = parseInt(commands[1]);
-        if (commands[2] && parseInt(commands[2]) >= 60000) {
-          USER_MIN_HOURS_CHECK_FREQUENCY = parseInt(commands[2]);
+    switch(commands[1]) {
+      case 'USER_MIN_HOURS':    //startNotifications [minHours] [checkFrequency]
+        if (commands[2] && parseInt(commands[2])) {
+          USER_MIN_HOURS = parseInt(commands[2]);
+        } else {
+          slackAPI.postMessageToChannel('incorrect parameters for USER_MIN_HOURS');
         }
-        setInterval(RunUserHoursCheck, USER_MIN_HOURS_CHECK_FREQUENCY); // FUTURE CHANGE TO 86400000
         break;
-      case 'help':
+      case 'USER_MIN_HOURS_CHECK_FREQUENCY':
+        if (commands[2] && parseInt(commands[2])) {
+          USER_MIN_HOURS_CHECK_FREQUENCY = parseInt(commands[2]);
+        } else {
+          slackAPI.postMessageToChannel('incorrect parameters for USER_MIN_HOURS_CHECK_FREQUENCY');
+        }
+        break;
+      default:
         break;
     }
-    slackAPI.postMessageToUser('@mikerobertking', 'NOTIFICATIONS STARTED');
-    slackAPI.postMessageToUser('@tyronetan', 'NOTIFICATIONS STARTED');
   }
 });
 
 
 function ValidateMessage(message) {
-  console.log(message);
-  if (message && (message.startsWith("startNotifications") || message.startsWith("help")))
-    return true;*/
-});
+  if (message && (message.startsWith("set") || message.startsWith("help")))
+    return true;
+}
 
 // start listening to the slack team associated to the token
 bot.listen({
