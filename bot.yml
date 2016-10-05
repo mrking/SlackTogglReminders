@@ -5,8 +5,8 @@ slackscopes:
   - commands
   - incoming-webhook
 config:
-  - name: SLACK_CHANNEL_ID
-    friendly_name: Slack Channel ID
+  - name: SLACK_CHANNEL_NAME
+    friendly_name: Slack Channel Name
     info: Default channel where messages are posted
     default: time-management
     type: text
@@ -29,6 +29,6 @@ config:
   - name: WARNING_LIMIT_PERIOD
     friendly_name: Time between warnings
     info: The number of hours a between warnings to prevent spamming a users
-    type: number
+    type: integer
     default: 24
     global: true
