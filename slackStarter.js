@@ -33,6 +33,7 @@ bot.hello(function(message) {
       case 'help':
         break;
     }
+    slackAPI.postMessageToUser('@mikerobertking', 'NOTIFICATIONS STARTED');
     slackAPI.postMessageToUser('@tyronetan', 'NOTIFICATIONS STARTED');
   }
 });
