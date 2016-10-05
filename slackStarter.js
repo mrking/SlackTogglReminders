@@ -16,6 +16,8 @@ bot.started(function(payload) {
     setInterval(RunUserHoursCheck, USER_MIN_HOURS_CHECK_FREQUENCY);
 });
 
+bot.hello(slackAPI.postMessageToChannel);
+
 bot.message(function(message) {
   slackAPI.postMessageToChannel('Hello from the other side, I must have called a thousand times');
   slackAPI.postMessageToUser('@tyronetan', message.text); //this works
@@ -35,6 +37,7 @@ bot.message(function(message) {
         if (commands[2] && parseInt(commands[2])) {
             USER_MIN_HOURS_CHECK_FREQUENCY = parseInt(commands[2]);
         } //since the [minHours] parameter is an optional field, allow them to ignore the parameter or write the wrogn flags
+        slackAPI.postMessageToChannel('Notifications started');
         setInterval(RunUserHoursCheck, USER_MIN_HOURS_CHECK_FREQUENCY);
         break;
       case 'help':
