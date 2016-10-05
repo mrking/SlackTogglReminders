@@ -6,8 +6,44 @@ var SLACK_CHANNEL_NAME = process.env.SLACK_CHANNEL_NAME;
 var SLACK_NOTIFICATION_LIMIT_PERIOD = process.env.SLACK_NOTIFICATION_LIMIT_PERIOD;
 
 var _sent_notifications = {};
+var _selfAuth = null;
 
 var self = module.exports = {
+  getBotName: function() {
+    if(_selfAuth) {
+        return Promise.resolve(_selfAuth.user);
+    } else {
+      return new Promise(function(resolve, reject) {
+        slack.auth.test({token: SLACK_TOKEN}, function(err, data) {
+          if (err) {
+              reject(err);
+              return;
+          } else {
+            _selfAuth = data;
+            resolve(data.user);
+            return;
+          }
+        });
+      });
+    }
+  },getBotID: function() {
+    if(_selfAuth) {
+        return Promise.resolve(_selfAuth.user_id);
+    } else {
+      return new Promise(function(resolve, reject) {
+        slack.auth.test({token: SLACK_TOKEN}, function(err, data) {
+          if (err) {
+              reject(err);
+              return;
+          } else {
+            _selfAuth = data;
+            resolve(data.user_id);
+            return;
+          }
+        });
+      });
+    }
+  },
   getUsers: function() {
     return new Promise(function(resolve, reject) {
       slack.users.list({token: SLACK_TOKEN}, function(err, data) {
@@ -33,11 +69,16 @@ var self = module.exports = {
       });
     });
   },
-  postMessageToChannel: function(message) {
+  postMessageToChannel: function(message, channel) {
+    if(!channel) {
+        console.log('no channel set, using default');
+        channel = SLACK_CHANNEL_NAME;
+    }
+
     console.info('posting message to channel: %s', message);
     slack.chat.postMessage({
         token: SLACK_TOKEN,
-        channel: SLACK_CHANNEL_NAME,
+        channel: channel,
         text: message,
         as_user: true
     }, function(err){
@@ -47,15 +88,7 @@ var self = module.exports = {
   },
   postMessageToUser: function(userName, message) {
     console.info('posting message to user %s: %s', userName, message);
-    slack.chat.postMessage({
-        token: SLACK_TOKEN,
-        channel: userName,
-        text: message,
-        as_user: true
-    }, function(err){
-      if(err)
-      console.error('unable to post message to user: ' + err);
-    });
+    self.postMessageToChannel(userName, message);
   },
   sendNotification: function(userName, notificationType, message, alsoSendToChannel) {
 

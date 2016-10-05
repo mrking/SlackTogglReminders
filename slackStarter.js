@@ -16,46 +16,43 @@ var USER_MIN_HOURS_IN_DAYS = process.env.USER_MIN_HOURS_IN_DAYS;
 // do something with the rtm.start payload
 bot.started(function(payload) {
     console.log('bot started');
+    console.log('setting RunUserHoursCheck on interval %d', USER_MIN_HOURS_CHECK_FREQUENCY);
+    slackAPI.getBotName().then(function(name){
+      console.log('connected to slack and my name is %s', name);
+    });
     setInterval(RunUserHoursCheck, USER_MIN_HOURS_CHECK_FREQUENCY);
 });
 
 
 bot.message(function(message) {
-
-  if (ValidateMessage(message.text)) {
-    var commands = message.text.split(' ');
-
-    switch(commands[0]) {
-      case 'startNotifications':    //startNotifications [minHours] [checkFrequency]
-        if (commands[1] && parseInt(commands[1])) {
-          USER_MIN_HOURS = parseInt(commands[1]);
-        }   //since the [minHours] parameter is an optional field, allow them to ignore the parameter or write the wrogn flags
-        if (commands[2] && parseInt(commands[2])) {
-            USER_MIN_HOURS_CHECK_FREQUENCY = parseInt(commands[2]);
-        } //since the [minHours] parameter is an optional field, allow them to ignore the parameter or write the wrogn flags
-        slackAPI.postMessageToChannel('Notifications started');
-        setInterval(RunUserHoursCheck, USER_MIN_HOURS_CHECK_FREQUENCY);
-        break;
-      case 'help':
-        slackAPI.postMessageToChannel('f u I don\'t help');
-        break;
-      default:
-        break;
+  slackAPI.getBotID().then(function(name){
+    if(message.text.indexOf('@' + name) != -1) {
+      var message_split = message.text.split(' ');
+      switch(message_split[1]) {
+        case 'report':
+          if(message_split.length > 2) {
+            // do some stuff in here
+          }
+          else {
+            slackAPI.postMessageToChannel('To get a time report on a user type "report USER_NAME" (e.g. "report mikerobertking")', message.channel)
+          }
+          break;
+        case 'help':
+          slackAPI.postMessageToChannel('*\n* The following commands are available:\n* set (an environment variable)\n* report (on a user)', message.channel);
+          break;
+        default:
+          slackAPI.postMessageToChannel('Unknown Command: say "help" for commands', message.channel);
+      }
     }
-  }
+  });
 });
-
-function ValidateMessage(message) {
-  if (message && (message.startsWith("startNotifications") || message.startsWith("help")))
-    return true;
-}
 
 // start listening to the slack team associated to the token
 bot.listen({
     token: SLACK_TOKEN
 });
 
-function RunUserHoursCheck() {
+function RunUserHoursCheck(username) {
     console.log('Running User Hours Check');
     var startPeriod = new Date();
     startPeriod.setDate(startPeriod.getDate() - USER_MIN_HOURS_IN_DAYS);
