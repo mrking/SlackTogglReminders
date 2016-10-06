@@ -5,6 +5,7 @@ var SLACK_TOKEN = process.env.SLACK_TOKEN;
 var SLACK_CHANNEL_NAME = process.env.SLACK_CHANNEL_NAME;
 var SLACK_NOTIFICATION_LIMIT_PERIOD = process.env.SLACK_NOTIFICATION_LIMIT_PERIOD;
 
+var UsersInSlack = {};
 var _sent_notifications = {};
 var _selfAuth = null;
 
@@ -26,7 +27,31 @@ var self = module.exports = {
         });
       });
     }
-  },getBotID: function() {
+  },
+  getUser: function(email) {
+      if(UsersInSlack[email]) {
+        return Promise.resolve(UsersInSlack[email]);
+      } else {
+        return new Promise(function (resolve, reject) {
+            // test ws ID 1382104
+            self.getUsers().then(function(users) {
+                for (var i = 0; i <  users.length; i++) {
+                  UsersInSlack[users[i].email] = users[i];
+                }
+
+                if(UsersInSlack[email]) {
+                  resolve(UsersInSlack[email]);
+                } else {
+                  reject('unable to find ' + email +  ' in slack');
+                }
+              }, function() {
+                console.error ('Unable to find slack user %s', email);
+                reject('unable to find ' + email +  ' in slack');
+              });
+          });
+      }
+    },
+  getBotID: function() {
     if(_selfAuth) {
         return Promise.resolve(_selfAuth.user_id);
     } else {
