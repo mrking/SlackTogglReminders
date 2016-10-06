@@ -34,8 +34,8 @@ config:
     type: text
     global: true
   - name: USER_MIN_HOURS_IN_DAYS
-    friendly_name: Period Length of Required Hours
-    info: The number of hours of the period that must be recorded.
+    friendly_name: Period Length in Days of the Required Hours
+    info: The period that defines the required hours length in days
     type: text
     global: true
   - name: USER_MIN_HOURS_CHECK_FREQUENCY
