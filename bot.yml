@@ -33,6 +33,11 @@ config:
     info: The number of hours a user must log before warning is sent
     type: text
     global: true
+  - name: USER_MIN_HOURS_IN_DAYS
+    friendly_name: Period Length of Required Hours
+    info: The number of hours of the period that must be recorded.
+    type: text
+    global: true
   - name: USER_MIN_HOURS_CHECK_FREQUENCY
     friendly_name: Time between checks
     info: The number of milliseconds between checking toggl
