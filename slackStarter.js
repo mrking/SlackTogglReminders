@@ -28,10 +28,16 @@ bot.message(function(message) {
   slackAPI.getBotID().then(function(name){
     if(message.text.indexOf('@' + name) != -1) {
       var message_split = message.text.split(' ');
-      switch(message_split[1]) {
+      switch(message_split[1]) {  //why [1], not [0], index 1?
         case 'report':
           if(message_split.length > 2) {
-            // do some stuff in here
+            var reportUser = slackAPI.getUser(message_split[2]);
+
+            if (reportUser) {
+
+            } else {
+              slackAPI.postMessageToChannel('To get a time report on a user type "report [USER_NAME]" (e.g. "report mikerobertking")', message.channel)
+            }
           }
           else {
             slackAPI.postMessageToChannel('To get a time report on a user type "report [USER_NAME]" (e.g. "report mikerobertking")', message.channel)
