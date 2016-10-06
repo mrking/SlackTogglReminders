@@ -1,4 +1,3 @@
-var moment = require('moment');
 var togglAPI = require('./Toggl.js');
 var slackAPI = require('./Slack.js');
 var slack = require('slack');
