@@ -1,4 +1,5 @@
 var slack = require('slack');
+var cache = require('./cache.js');
 
 // CONST
 var SLACK_TOKEN = process.env.SLACK_TOKEN;
@@ -12,13 +13,13 @@ var _selfAuth = null;
 var self = module.exports = {
   getBotName: function() {
     if(_selfAuth) {
-        return Promise.resolve(_selfAuth.user);
+      return Promise.resolve(_selfAuth.user);
     } else {
       return new Promise(function(resolve, reject) {
         slack.auth.test({token: SLACK_TOKEN}, function(err, data) {
           if (err) {
-              reject(err);
-              return;
+            reject(err);
+            return;
           } else {
             _selfAuth = data;
             resolve(data.user);
@@ -28,38 +29,39 @@ var self = module.exports = {
       });
     }
   },
-  getUser: function(email) {
-      if(UsersInSlack[email]) {
-        return Promise.resolve(UsersInSlack[email]);
-      } else {
-        return new Promise(function (resolve, reject) {
-            // test ws ID 1382104
-            self.getUsers().then(function(users) {
-                for (var i = 0; i <  users.length; i++) {
-                  UsersInSlack[users[i].email] = users[i];
-                }
-
-                if(UsersInSlack[email]) {
-                  resolve(UsersInSlack[email]);
-                } else {
-                  reject('unable to find ' + email +  ' in slack');
-                }
-              }, function() {
-                console.error ('Unable to find slack user %s', email);
-                reject('unable to find ' + email +  ' in slack');
-              });
-          });
-      }
-    },
+  getUser: function(username) {
+    if(UsersInSlack[username]) {
+      return Promise.resolve(UsersInSlack[username]);
+    } else {
+      return new Promise(function (resolve, reject) {
+        return cache(username, 24);
+        // test ws ID 1382104
+        // self.getUsers().then(function(users) {
+        //   for (var i = 0; i <  users.length; i++) {
+        //     UsersInSlack[users[i].email] = users[i];
+        //   }
+        //
+        //   if(UsersInSlack[username]) {
+        //     resolve(UsersInSlack[username]);
+        //   } else {
+        //     reject('unable to find ' + email +  ' in slack');
+        //   }
+        // }, function() {
+        //   console.error ('Unable to find slack user %s', email);
+        //   reject('unable to find ' + email +  ' in slack');
+        // });
+      });
+    }
+  },
   getBotID: function() {
     if(_selfAuth) {
-        return Promise.resolve(_selfAuth.user_id);
+      return Promise.resolve(_selfAuth.user_id);
     } else {
       return new Promise(function(resolve, reject) {
         slack.auth.test({token: SLACK_TOKEN}, function(err, data) {
           if (err) {
-              reject(err);
-              return;
+            reject(err);
+            return;
           } else {
             _selfAuth = data;
             resolve(data.user_id);
@@ -73,8 +75,8 @@ var self = module.exports = {
     return new Promise(function(resolve, reject) {
       slack.users.list({token: SLACK_TOKEN}, function(err, data) {
         if (err) {
-            reject(err);
-            return;
+          reject(err);
+          return;
         } else {
           resolve(data.members);
           return;
@@ -96,16 +98,16 @@ var self = module.exports = {
   },
   postMessageToChannel: function(message, channel) {
     if(!channel) {
-        console.log('no channel set, using default');
-        channel = SLACK_CHANNEL_NAME;
+      console.log('no channel set, using default');
+      channel = SLACK_CHANNEL_NAME;
     }
 
     console.info('posting message to channel: %s', message);
     slack.chat.postMessage({
-        token: SLACK_TOKEN,
-        channel: channel,
-        text: message,
-        as_user: true
+      token: SLACK_TOKEN,
+      channel: channel,
+      text: message,
+      as_user: true
     }, function(err){
       if(err)
       console.error('unable to post message to channel: ' + err);

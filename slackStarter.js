@@ -35,15 +35,15 @@ bot.message(function(message) {
                   slackAPI.postMessageToChannel(text, message.channel);
               });
             }, function(err) {
-              slackAPI.postMessageToChannel('To get a time report on a user type "report [USER_EMAIL]" (e.g. "report mikerobertking")', message.channel);
+              slackAPI.postMessageToChannel('To get a time report on a user type "report [USERNAME]" (e.g. "report mikerobertking")', message.channel);
             });
           }
           else {
-            slackAPI.postMessageToChannel('To get a time report on a user type "report [USER_EMAIL]" (e.g. "report mikerobertking")', message.channel);
+            slackAPI.postMessageToChannel('To get a time report on a user type "report [USERNAME]" (e.g. "report mikerobertking")', message.channel);
           }
           break;
         case 'help':
-          slackAPI.postMessageToChannel('The following commands are available:\n* report [USER_EMAIL]; (time report on a user)', message.channel);
+          slackAPI.postMessageToChannel('The following commands are available:\n* report [USERNAME]; (time report on a user)', message.channel);
           break;
         default:
           slackAPI.postMessageToChannel('Unknown Command: say "help" for commands', message.channel);
