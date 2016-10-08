@@ -7,23 +7,15 @@ describe("Our toggl API test account", function() {
       it("shouldn't be cached yet on init", function() {
           expect(togglAPI.getCachedUsers()).to.be.empty;
       });
-      it("should have mike and then one user cached", function(done) {
-          togglAPI.getUser('mikerobertking@gmail.com').then(function() {
-            console.log('this part seems to work');
-            done();
-          });
+      it("should have mike and at least two users cached", function(done) {
           return togglAPI.getUser('mikerobertking@gmail.com').then(function(user) {
-            console.log('but we never reach here for some reason');
               expect(user).to.exist;
               expect(user.email).to.equal('mikerobertking@gmail.com');
               expect(togglAPI.getCachedUsers()).to.exist;
-              console.log( "in then getCachedUsers");
-              expect(togglAPI.getCachedUsers().length).to.equals(1);
-              done();
+              expect(Object.keys(togglAPI.getCachedUsers()).length).to.be.at.least(2);
           }, function(err) {
             assert.isNotOk(err,'ran into error trying to get mike');
-            done();
-          });
+          }).then(done);
       });
   });
   describe("workspaces", function() {
