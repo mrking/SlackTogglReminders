@@ -10,13 +10,15 @@ describe("Our toggl API test account", function() {
       it("should have mike and then one user cached", function(done) {
           togglAPI.getUser('mikerobertking@gmail.com').then(function() {
             console.log('this part seems to work');
+            done();
           });
           return togglAPI.getUser('mikerobertking@gmail.com').then(function(user) {
-            console('but we never reach here for some reason');
+            console.log('but we never reach here for some reason');
               expect(user).to.exist;
               expect(user.email).to.equal('mikerobertking@gmail.com');
               expect(togglAPI.getCachedUsers()).to.exist;
-              expect(togglAPI.getCachedUsers().length).to.equal(1);
+              console.log(togglAPI.getCachedUsers() + "in then getCachedUsers");
+              expect(togglAPI.getCachedUsers().length).to.equals(1);
               done();
           }, function(err) {
             assert.isNotOk(err,'ran into error trying to get mike');
