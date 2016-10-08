@@ -24,16 +24,23 @@ describe("Our toggl API test account", function() {
             assert.isNotOk(err,'ran into error trying to get mike');
             done();
           });
-      });/*
-      it("shouldn't have fakemike", function(done) {
-          return togglAPI.getUser('fakemikerobertking@gmail.com').then(function(users) {
+      });
+  });
+  describe("workspaces", function() {
+    it("should resolve a workspace name into a workspace id", function(done) {
+      var workspace_name = "Lexicon";
 
-          }, function(err) {
-              // TODO add expected error type assertion
-              expect(err).to.exist;
-              done();
-          });
-      });*/
+      return togglAPI.getWorkspaceID(workspace_name).then(function(workspace_id) {
+        console.log(workspace_id);
+        expect(workspace_id).to.exist;
+        expect(workspace_id).to.be.at.least(0);
+          console.log("WORKSPACE");
+        done();
+      }, function(err) {
+        assert.isNotOk(err,'ran into error trying to get workspace');
+        done();
+      });
+    });
   });
   describe("Time reporting", function() {
     it("should have any reported number of hours for tyrone", function(done) {
