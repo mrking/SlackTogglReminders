@@ -42,9 +42,10 @@ describe("Our toggl API test account", function() {
 
         return togglAPI.getTimeSpent(startPeriod, new Date(), "new.overlord@gmail.com").then(function(report) {
           console.log("trying to access tyrone's time report");
-          console.log(report);
             expect(report).to.exist;
-            expect(report.total_grand).to.be.at.least(0);
+            console.log("report exists");
+            expect(report).to.be.at.least(0);
+            console.log("report total_grand > 0");
             done();
             //expect(user.email).to.equals("new.overlord@gmail.com")
         }).catch(function(err) {
