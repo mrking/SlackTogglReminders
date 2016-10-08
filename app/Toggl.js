@@ -9,7 +9,7 @@ var toggl = new TogglClient({apiToken: TOGGL_API_TOKEN});
 var UsersInToggl = {};
 
 var self = module.exports = {
-  getCachedUsers = function() {
+  getCachedUsers: function() {
     return UsersInToggl;
   },
   // returns a promise for the user object with a parameter of an email address string
