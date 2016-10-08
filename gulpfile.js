@@ -3,9 +3,10 @@ var $          = require('gulp-load-plugins')();
 var mocha      = require('gulp-mocha');
 var jshint     = require('gulp-jshint');
 var istanbul   = require('gulp-istanbul');
+var coveralls  = require('gulp-coveralls');
 
 // settings
-var codeCoverageThreshold = -1; // coveralls.io will notify us of failed build instead
+var codeCoverageThreshold = 0; // coveralls.io will notify us of failed build instead
 var buildOnceMode = true;
 
 // runtime
@@ -48,7 +49,7 @@ gulp.task('coveralls', ['test'], function () {
     return;
   }
 
-  return gulp.src(path.join(__dirname, 'coverage/lcov.info'))
+  return gulp.src('coverage/lcov.info')
     .pipe(coveralls());
 });
 

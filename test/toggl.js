@@ -1,5 +1,5 @@
 var expect = require("chai").expect;
-var toglAPI = require("../app/Toggl.js");
+var togglAPI = require("../app/Toggl.js");
 
 describe("Toggl client", function() {
   describe("Users in slack cache", function() {
