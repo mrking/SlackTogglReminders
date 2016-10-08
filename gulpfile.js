@@ -3,6 +3,7 @@ var $          = require('gulp-load-plugins')();
 var mocha      = require('gulp-mocha');
 var jshint     = require('gulp-jshint');
 var istanbul   = require('gulp-istanbul');
+var coveralls  = require('gulp-coveralls');
 
 // settings
 var codeCoverageThreshold = 0; // coveralls.io will notify us of failed build instead
