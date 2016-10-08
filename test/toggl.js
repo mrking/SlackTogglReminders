@@ -13,9 +13,11 @@ describe("Our toggl API test account", function() {
               expect(user.email).to.equal('mikerobertking@gmail.com');
               expect(togglAPI.getCachedUsers()).to.exist;
               expect(Object.keys(togglAPI.getCachedUsers()).length).to.be.at.least(2);
+              done();
           }, function(err) {
             assert.isNotOk(err,'ran into error trying to get mike');
-          }).then(done);
+            done();
+          }).catch(done);
       });
   });
   describe("workspaces", function() {
@@ -31,7 +33,7 @@ describe("Our toggl API test account", function() {
       }, function(err) {
         assert.isNotOk(err,'ran into error trying to get workspace');
         done();
-      });
+      }).catch(done);
     });
   });
   describe("Time reporting", function() {
@@ -48,6 +50,9 @@ describe("Our toggl API test account", function() {
             console.log("report total_grand > 0");
             done();
             //expect(user.email).to.equals("new.overlord@gmail.com")
+        }, function(err) {
+          assert.isNotOk(err,'ran into error trying to get reported number of hours for tyrone');
+          done();
         }).catch(function(err) {
           assert.isNotOk(err, "ran into an error trying to access tyrone's time report");
           done();
