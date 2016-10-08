@@ -4,12 +4,14 @@ var TogglClient = require('toggl-api');
 var TOGGL_WORKSPACE_NAME = process.env.TOGGL_WORKSPACE_NAME;
 var TOGGL_API_TOKEN = process.env.TOGGL_API_TOKEN;
 
-var UsersInToggl = {};
 var WorkspaceID = -1;
 var toggl = new TogglClient({apiToken: TOGGL_API_TOKEN});
-
+var UsersInToggl = {};
 
 var self = module.exports = {
+  getCachedUsers: function() {
+    return UsersInToggl;
+  },
   // returns a promise for the user object with a parameter of an email address string
   getUser: function(email) {
       if(UsersInToggl[email]) {
