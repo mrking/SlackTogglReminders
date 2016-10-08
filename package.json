@@ -9,8 +9,8 @@
   },
   "devDependencies": {
     "chai": "^3.5.0",
-    "coveralls": "^2.11.14",
     "gulp": "^3.9.0",
+    "gulp-coveralls": "^0.1.4",
     "gulp-istanbul": "^0.10.4",
     "gulp-jshint": "^2.0.1",
     "gulp-load-plugins": "^1.1.0",
@@ -21,7 +21,7 @@
   },
   "scripts": {
     "start": "node slackStarter.js",
-    "test": "gulp pretest test lint"
+    "test": "gulp pretest test coveralls lint"
   },
   "repository": {
     "type": "git",

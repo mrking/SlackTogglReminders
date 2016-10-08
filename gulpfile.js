@@ -43,6 +43,16 @@ gulp.task('test', function() {
     .pipe(istanbul.enforceThresholds({ thresholds: { global: buildOnceMode ? codeCoverageThreshold : 0 }}));
 });
 
+gulp.task('coveralls', ['test'], function () {
+  if (!process.env.CI) {
+    return;
+  }
+
+  return gulp.src(path.join(__dirname, 'coverage/lcov.info'))
+    .pipe(coveralls());
+});
+
+
 gulp.task('lint', function() {
   return gulp.src(['private/**/*.js', 'app/**/*.js', 'config/**/*.js', 'db/**/*.js', '**/*.es'])
     .pipe(jshint())
