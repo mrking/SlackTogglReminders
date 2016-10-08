@@ -69,6 +69,8 @@ gulp.task('lint', function() {
     }
 });
 
+gulp.on('error', process.exit.bind(process, 1));
+
 // on exit, force Gulp to exit with the error code of 1 if any of the tasks failed
 process.on('exit', function () {
   if(buildOnceMode) {
