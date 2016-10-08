@@ -6,10 +6,9 @@ var TOGGL_API_TOKEN = process.env.TOGGL_API_TOKEN;
 
 var WorkspaceID = -1;
 var toggl = new TogglClient({apiToken: TOGGL_API_TOKEN});
-
+var UsersInToggl = {};
 
 var self = module.exports = {
-  var UsersInToggl = {};
   getCachedUsers = function() {
     return UsersInToggl;
   },
