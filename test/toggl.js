@@ -49,7 +49,7 @@ describe("Our toggl API test account ", function() {
       var startPeriod = new Date();
       startPeriod.setDate(startPeriod.getDate() - 7);
 
-      return  togglAPI.getTimeSpent(new Date, startPeriod, email).then(function(report) {
+      return  togglAPI.getTimeSpent(new Date(), startPeriod, email).then(function(report) {
         expect(report).to.exist;
         done();
         //expect(user.email).to.equals("new.overlord@gmail.com")
@@ -58,5 +58,4 @@ describe("Our toggl API test account ", function() {
 
 
   });
-});
 });
