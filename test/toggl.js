@@ -26,7 +26,7 @@ describe("Our toggl API test account ", function() {
           done();
       });
     });
-    it("BLAH", function() {
+    it("BLAH", function(done) {
         var email = "lasdflaksdjflkasjdf@laksflasd.com";
 
         return togglAPI.getUser(email).then(function() {}, function(err) {
@@ -34,7 +34,7 @@ describe("Our toggl API test account ", function() {
           done();
         });
       });
-      it("BLAH", function() {
+      it("BLAH", function(done) {
         var email = "new.overlord@gmail.com";
 
       return togglAPI.getUser(email).then(function(user) {
@@ -42,7 +42,7 @@ describe("Our toggl API test account ", function() {
           expect(user.email).to.equals("new.overlord@gmail.com");
           done();
         });
-        it("BLAH", function() {
+        it("BLAH", function(done) {
           var email = "new.overlord@gmail.com";
           var startPeriod = new Date();
       startPeriod.setDate(startPeriod.getDate() - 7);
