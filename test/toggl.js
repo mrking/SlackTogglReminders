@@ -21,7 +21,6 @@ describe("Our toggl API test account", function() {
       });
       it("Sith Lord Mike King should not build get hold of the Toggl", function(done) {
         return togglAPI.getUser('sithmikeking@gmail.com').then(function(user) {
-
           assert.isNotOk(err,'a disturbance in the force has been felt');
           done();
         },function(err){
