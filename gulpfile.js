@@ -35,7 +35,7 @@ gulp.task('pretest', function () {
     .pipe(istanbul.hookRequire());
 });
 
-gulp.task('test', function() {
+gulp.task('test', ['pretest'], function() {
   return gulp.src('test/*.js')
 		// gulp-mocha needs filepaths so you can't have any plugins before it
 		.pipe(mocha({reporter: 'min'})) // Creating the reports after tests ran

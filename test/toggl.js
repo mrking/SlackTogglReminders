@@ -11,7 +11,7 @@ describe("Our toggl API test account ", function() {
   describe("users", function() {
     it("should have mike", function(done) {
       return togglAPI.getUser('mikerobertking@gmail.com').then(function(user) {
-        console.log('test');
+
         expect(user).to.exist;
         expect(user.email).to.be.equal('mikerobertking@gmail.com');
         done();
