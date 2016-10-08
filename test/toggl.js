@@ -19,6 +19,13 @@ describe("Our toggl API test account", function() {
             done();
           }).catch(done);
       });
+      it("Sith Lord Mike King should not build get hold of the Toggl", function(done) {
+        return togglAPI.getUser('sithmikeking@gmail.com').then(function(user) {
+          console.err(user);
+          expect(user).to.throw(Error);
+          done();
+        }).catch(done);
+      });
   });
   describe("workspaces", function() {
     it("should resolve a workspace name into a workspace id", function(done) {
