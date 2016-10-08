@@ -5,7 +5,7 @@ var jshint     = require('gulp-jshint');
 var istanbul   = require('gulp-istanbul');
 
 // settings
-var codeCoverageThreshold = -1; // coveralls.io will notify us of failed build instead
+var codeCoverageThreshold = 0; // coveralls.io will notify us of failed build instead
 var buildOnceMode = true;
 
 // runtime
