@@ -1,5 +1,4 @@
 var slack = require('slack');
-var cache = require('./cache.js');
 
 // CONST
 var SLACK_TOKEN = process.env.SLACK_TOKEN;
