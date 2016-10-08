@@ -30,28 +30,28 @@ var self = module.exports = {
     }
   },
   getUser: function(username) {
-    if(UsersInSlack[username]) {
-      return Promise.resolve(UsersInSlack[username]);
-    } else {
-      return new Promise(function (resolve, reject) {
-        return cache(username, 24);
-        // test ws ID 1382104
-        // self.getUsers().then(function(users) {
-        //   for (var i = 0; i <  users.length; i++) {
-        //     UsersInSlack[users[i].email] = users[i];
-        //   }
-        //
-        //   if(UsersInSlack[username]) {
-        //     resolve(UsersInSlack[username]);
-        //   } else {
-        //     reject('unable to find ' + email +  ' in slack');
-        //   }
-        // }, function() {
-        //   console.error ('Unable to find slack user %s', email);
-        //   reject('unable to find ' + email +  ' in slack');
-        // });
-      });
-    }
+    return Promise.resolve(cache(username, 24));
+    // if(UsersInSlack[username]) {
+    //   return Promise.resolve(UsersInSlack[username]);
+    // } else {
+    //   return new Promise(function (resolve, reject) {
+    //     // test ws ID 1382104
+    //     self.getUsers().then(function(users) {
+    //       for (var i = 0; i <  users.length; i++) {
+    //         UsersInSlack[users[i].email] = users[i];
+    //       }
+    //
+    //       if(UsersInSlack[username]) {
+    //         resolve(UsersInSlack[username]);
+    //       } else {
+    //         reject('unable to find ' + email +  ' in slack');
+    //       }
+    //     }, function() {
+    //       console.error ('Unable to find slack user %s', email);
+    //       reject('unable to find ' + email +  ' in slack');
+    //     });
+    //   });
+    // }
   },
   getBotID: function() {
     if(_selfAuth) {
