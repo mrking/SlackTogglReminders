@@ -2,7 +2,7 @@ var expect = require("chai").expect;
 var togglAPI = require("../app/Toggl.js");
 
 describe("Our toggl API test account ", function() {
-  this.timeout(15000);
+  this.timeout(30000);
   describe("users in toggl cache", function() {
     it("should have nothing at init", function() {
       expect(togglAPI.getCachedUsers()).to.be.empty;
