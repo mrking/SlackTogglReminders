@@ -50,4 +50,6 @@ describe("Our toggl API test account ", function() {
   });
 
 
+  });
+});
 });
