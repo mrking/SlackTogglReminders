@@ -13,7 +13,7 @@ config:
     type: text
     global: true
   - name: SLACK_NOTIFICATION_LIMIT_PERIOD
-    friendly_name: Time between warnings
+    friendly_name: Time limit between warnings to users? (hours)
     info: The number of hours a between warnings to prevent spamming a users
     type: text
     default: 24
@@ -39,7 +39,7 @@ config:
     type: text
     global: true
   - name: USER_MIN_HOURS_CHECK_FREQUENCY
-    friendly_name: Time between checks
+    friendly_name: How often to run checks? (milliseconds)
     info: The number of milliseconds between checking toggl
     type: text
     default: 86400000

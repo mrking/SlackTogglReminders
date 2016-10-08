@@ -94,4 +94,3 @@ function RunUserHoursCheck(user) {
               slackAPI.postMessageToChannel('Unable to get users in toggl ' + member.id);
           });
     }
-}
