@@ -12,7 +12,7 @@ describe("Our toggl API test account", function() {
               expect(user).to.exist;
               expect(user.email).to.equal('mikerobertking@gmail.com');
               expect(togglAPI.getCachedUsers()).to.exist;
-              expect(Object.keys(togglAPI.getCachedUsers()).length).to.be.at.least(2);
+              expect(Object.keys(togglAPI.getCachedUsers()).length).to.be.at.least(3);
               done();
           }, function(err) {
             assert.isNotOk(err,'ran into error trying to get mike');
