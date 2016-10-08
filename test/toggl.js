@@ -17,7 +17,7 @@ describe("Our toggl API test account", function() {
               expect(user).to.exist;
               expect(user.email).to.equal('mikerobertking@gmail.com');
               expect(togglAPI.getCachedUsers()).to.exist;
-              console.log(togglAPI.getCachedUsers() + "in then getCachedUsers");
+              console.log( "in then getCachedUsers");
               expect(togglAPI.getCachedUsers().length).to.equals(1);
               done();
           }, function(err) {
@@ -33,16 +33,25 @@ describe("Our toggl API test account", function() {
               expect(err).to.exist;
               done();
           });
-      });
-      it("should have any reported number of hours for tyrone", function(done) {
-          var startPeriod = new Date();
-          startPeriod.setDate(startPeriod.getDate() - 7);
-
-          return togglAPI.getTimeSpent(new Date(), startPeriod, "new.overlord@gmail.com").then(function(report) {
-              expect(report).to.exist;
-              done();
-              //expect(user.email).to.equals("new.overlord@gmail.com")
-          });
       });*/
+  });
+  describe("Time reporting", function() {
+    it("should have any reported number of hours for tyrone", function(done) {
+        var startPeriod = new Date();
+        startPeriod.setDate(startPeriod.getDate() - 7);
+        console.log("dates set as variables");
+
+        return togglAPI.getTimeSpent(startPeriod, new Date(), "new.overlord@gmail.com").then(function(report) {
+          console.log("trying to access tyrone's time report");
+          console.log(report);
+            expect(report).to.exist;
+            expect(report.total_grand).to.be.at.least(0);
+            done();
+            //expect(user.email).to.equals("new.overlord@gmail.com")
+        }).catch(function(err) {
+          assert.isNotOk(err, "ran into an error trying to access tyrone's time report");
+          done();
+        });
+    });
   });
 });
