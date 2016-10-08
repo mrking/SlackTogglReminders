@@ -12,7 +12,7 @@ describe("Our toggl API test account", function() {
               expect(user).to.exist;
               expect(user.email).to.equal('mikerobertking@gmail.com');
               expect(togglAPI.getCachedUsers()).to.exist;
-              expect(Object.keys(togglAPI.getCachedUsers()).length).to.be.at.least(3);
+              expect(Object.keys(togglAPI.getCachedUsers()).length).to.be.at.least(2);
               done();
           }, function(err) {
             assert.isNotOk(err,'ran into error trying to get mike');
@@ -22,8 +22,8 @@ describe("Our toggl API test account", function() {
       it("Sith Lord Mike King should not build get hold of the Toggl", function(done) {
         return togglAPI.getUser('sithmikeking@gmail.com').then(function(user) {
           console.err(user);
-          expect(user).to.throw(Error);
-          done();
+          expect(user).to.equal('unable to find sithmikeking@gmail.com in toggl');
+          reject();
         }).catch(done);
       });
   });
