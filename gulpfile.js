@@ -38,12 +38,12 @@ gulp.task('pretest', function () {
 gulp.task('test', ['pretest'], function() {
   return gulp.src('test/*.js')
 		// gulp-mocha needs filepaths so you can't have any plugins before it
-		.pipe(mocha({reporter: 'min'}))
+		.pipe(mocha({reporter: 'min'})).on("error", handleError)
      // Creating the reports after tests ran
     .pipe(istanbul.writeReports())
     // Enforce a coverage of at least 90%
     .pipe(istanbul.enforceThresholds({ thresholds: { global: buildOnceMode ? codeCoverageThreshold : 0 }}))
-    .on("error", handleError);
+    
 });
 
 gulp.task('coveralls', ['test'], function () {
