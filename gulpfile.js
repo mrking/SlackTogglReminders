@@ -38,10 +38,12 @@ gulp.task('pretest', function () {
 gulp.task('test', ['pretest'], function() {
   return gulp.src('test/*.js')
 		// gulp-mocha needs filepaths so you can't have any plugins before it
-		.pipe(mocha({reporter: 'min'})) // Creating the reports after tests ran
+		.pipe(mocha({reporter: 'min'}))
+     // Creating the reports after tests ran
     .pipe(istanbul.writeReports())
     // Enforce a coverage of at least 90%
-    .pipe(istanbul.enforceThresholds({ thresholds: { global: buildOnceMode ? codeCoverageThreshold : 0 }}));
+    .pipe(istanbul.enforceThresholds({ thresholds: { global: buildOnceMode ? codeCoverageThreshold : 0 }}))
+    .on("error", handleError);
 });
 
 gulp.task('coveralls', ['test'], function () {
@@ -68,8 +70,6 @@ gulp.task('lint', function() {
       process.emit('exit'); // or throw err
     }
 });
-
-gulp.on('error', process.exit.bind(process, 1));
 
 // on exit, force Gulp to exit with the error code of 1 if any of the tasks failed
 process.on('exit', function () {
