@@ -7,7 +7,7 @@ var togglAPI = require("../app/Toggl.js");
 // but achieve the same purpose.
 
 describe("Our toggl API test account", function() {
-    this.timeout(10000);
+    this.timeout(15000);
     describe("users", function() {
         it("shouldn't be cached yet on init", function() {
             assert(Object.keys(togglAPI.getCachedUsers()).length === 0);

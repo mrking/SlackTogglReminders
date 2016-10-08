@@ -36,6 +36,7 @@ var self = module.exports = {
         // test ws ID 1382104
         self.getUsers().then(function(users) {
           for (var i = 0; i <  users.length; i++) {
+
             UsersInSlack[users[i].email] = users[i];
           }
 
