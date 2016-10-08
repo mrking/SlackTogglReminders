@@ -22,36 +22,39 @@ describe("Our toggl API test account ", function() {
 
       }, function(err) {
         // TODO add expected error type assertion
-          expect(err).to.exist;
-          done();
+        expect(err).to.exist;
+        done();
       });
     });
-      it("BLAH", function() {
-        var email = "lasdflaksdjflkasjdf@laksflasd.com";
+    it("BLAH", function(done) {
+      var email = "lasdflaksdjflkasjdf@laksflasd.com";
 
       return togglAPI.getUser(email).then(function(user) {
-          expect(err).to.exist;
-          expect(user).to.equals('unable to find ' + email +  ' in toggl')
-
-        });
+        expect(err).to.exist;
+        expect(user).to.equals('unable to find ' + email +  ' in toggl')
+        done();
       });
-      it("BLAH", function() {
-        var email = "new.overlord@gmail.com";
+    });
+    it("BLAH", function(done) {
+      var email = "new.overlord@gmail.com";
 
       return togglAPI.getUser(email).then(function(user) {
-          expect(user.id).to.exist;
-          expect(user.email).to.equals("new.overlord@gmail.com")
-        });
-        it("BLAH", function() {
-          var email = "new.overlord@gmail.com";
-          var startPeriod = new Date();
+        expect(user.id).to.exist;
+        expect(user.email).to.equals("new.overlord@gmail.com")
+        done();
+      });
+    });
+    it("BLAH", function(done) {
+      var email = "new.overlord@gmail.com";
+      var startPeriod = new Date();
       startPeriod.setDate(startPeriod.getDate() - 7);
 
-        return  togglAPI.getTimeSpent(new Date, startPeriod, email).then(function(report) {
-            expect(report).to.exist;
-            //expect(user.email).to.equals("new.overlord@gmail.com")
-          });
-  });
+      return  togglAPI.getTimeSpent(new Date, startPeriod, email).then(function(report) {
+        expect(report).to.exist;
+        done();
+        //expect(user.email).to.equals("new.overlord@gmail.com")
+      });
+    });
 
 
   });
