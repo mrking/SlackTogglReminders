@@ -6,7 +6,6 @@ var togglAPI = require("../app/Toggl.js");
 // closer to being integration tests,
 // but achieve the same purpose.
 
-
 describe("Our toggl API test account", function() {
     this.timeout(10000);
     describe("users", function() {
@@ -57,6 +56,7 @@ describe("Our toggl API test account", function() {
                 done();
             }, function(err) {
                 expect(err).to.exist;
+                expect(err.getErrorCode()).to.be.equal(togglAPI.error.prototype.ERROR_CODE_WORKSPACE_ID_UNAVAILABLE)
                 done();
             }).catch(function() {
               done();

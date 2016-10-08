@@ -8,7 +8,31 @@ var toggl = new TogglClient({apiToken: TOGGL_API_TOKEN});
 var UsersInToggl = {};
 var WorkspacesInToggl = {};
 
+function TogglInterfaceError(Message, ErrorCode, err) {
+    var _message = Message;
+    var _err = err;
+    var _errCode = ErrorCode;
+    console.error('TogglInterfaceError: %s; %s; %s', Message, ErrorCode, err);
+}
+
+TogglInterfaceError.prototype = {
+  getMessage: function() {
+    return _message;
+  },
+  getError: function() {
+    return _err;
+  },
+  getErrorCode: function() {
+    return _errCode;
+  },
+
+  ERROR_CODE_SLACK_WORKSPACE_USERS:Symbol('ERROR_CODE_SLACK_WORKSPACE_USERS'),
+  ERROR_CODE_USER_NOT_FOUND:Symbol('ERROR_CODE_USER_NOT_FOUND'),
+  ERROR_CODE_WORKSPACE_ID_UNAVAILABLE:Symbol('ERROR_CODE_WORKSPACE_ID_UNAVAILABLE')
+};
+
 var self = module.exports = {
+  error: TogglInterfaceError,
   getCachedUsers: function() {
     return UsersInToggl;
   },
@@ -21,12 +45,8 @@ var self = module.exports = {
             // test ws ID 1382104
             self.getWorkspaceID(TOGGL_WORKSPACE_NAME).then(function(wsID) {
               toggl.getWorkspaceUsers(wsID, function(err, users) {
-
-                if(err) {
-                  console.error('ran into a problem getting to workspace users ' + err);
-                  reject (err);
-                  return;
-                }
+                if(err)
+                  reject (new TogglInterfaceError('Error attempting to get workspace users from Slack' ,TogglInterfaceError.prototype.ERROR_CODE_SLACK_WORKSPACE_USERS, err));
 
                 // Save users into our cache object
                 for (var i = 0; i <  users.length; i++) {
@@ -38,15 +58,12 @@ var self = module.exports = {
                   resolve(UsersInToggl[email]);
                   return;
                 } else {
-
-                  console.info('did not find our look up user using email ' + email);
-                  reject('unable to find ' + email +  ' in toggl');
+                  reject(new TogglInterfaceError('unable to find ' + email +  ' in toggl', TogglInterfaceError.prototype.ERROR_CODE_USER_NOT_FOUND , null));
                   return;
                 }
               });
             }, function(err) {
-              console.error ('Unable to find workspace ID for: ' + TOGGL_WORKSPACE_NAME);
-              reject(err);
+              reject(new TogglInterfaceError('Unable to find workspace ID for: ' + TOGGL_WORKSPACE_NAME, TogglInterfaceError.ERROR_CODE_WORKSPACE_ID_UNAVAILABLE, err ));
             });
         });
       }
@@ -67,8 +84,7 @@ var self = module.exports = {
                }
              }
 
-               console.info('Was unable to find workspace with name: ' +  workspaceName);
-               reject('Was unable to find workspace with name: ' +  workspaceName);
+             reject(new TogglInterfaceError('Was unable to find workspace with name: ' + workspaceName , TogglInterfaceError.ERROR_CODE_WORKSPACE_ID_UNAVAILABLE, null));
            });
         });
       }
@@ -90,23 +106,3 @@ var self = module.exports = {
      });
    }
  };
-
-
-
-
-// console.log('test getTimeSpent for Michael');
-/* module.exports.getTimeSpent(new Date(2016,01,01), new Date(), 'mikerobertking@gmail.com').then(function(response) {
-   console.log("Success! Hours spent: ", response);
- }, function(error) {
-   console.error("Failed!", error);
- });*/
-
-
-// example calls
-/*getTimeSpent('2016-07-01', '2016-12-01', 'mikerobertking@gmail.com', function(err, time) {
-  console.log("got Mike's hours: " + time);
-});
-getTimeSpent('2016-07-01', '2016-12-01', 'new.overlord@gmail.com', function(err, time) {
-  console.log("got Tyrone's hours: " + time);
-});
-*/
