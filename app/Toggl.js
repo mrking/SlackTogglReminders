@@ -9,21 +9,22 @@ var UsersInToggl = {};
 var WorkspacesInToggl = {};
 
 function TogglInterfaceError(Message, ErrorCode, err) {
-    var _message = Message;
-    var _err = err;
-    var _errCode = ErrorCode;
+    this.self = this;
+    this.self._message = Message;
+    this.self._err = err;
+    this.self._errCode = ErrorCode;
     console.error('TogglInterfaceError: %s; %s; %s', Message, ErrorCode, err);
 }
 
 TogglInterfaceError.prototype = {
   getMessage: function() {
-    return _message;
+    return this.self._message;
   },
   getError: function() {
-    return _err;
+    return this.self._err;
   },
   getErrorCode: function() {
-    return _errCode;
+    return this.self._errCode;
   },
 
   ERROR_CODE_SLACK_WORKSPACE_USERS:Symbol('ERROR_CODE_SLACK_WORKSPACE_USERS'),
@@ -63,7 +64,7 @@ var self = module.exports = {
                 }
               });
             }, function(err) {
-              reject(new TogglInterfaceError('Unable to find workspace ID for: ' + TOGGL_WORKSPACE_NAME, TogglInterfaceError.ERROR_CODE_WORKSPACE_ID_UNAVAILABLE, err ));
+              reject(new TogglInterfaceError('Unable to find workspace ID for: ' + TOGGL_WORKSPACE_NAME, TogglInterfaceError.prototype.ERROR_CODE_WORKSPACE_ID_UNAVAILABLE, err ));
             });
         });
       }
@@ -84,7 +85,7 @@ var self = module.exports = {
                }
              }
 
-             reject(new TogglInterfaceError('Was unable to find workspace with name: ' + workspaceName , TogglInterfaceError.ERROR_CODE_WORKSPACE_ID_UNAVAILABLE, null));
+             reject(new TogglInterfaceError('Was unable to find workspace with name: ' + workspaceName , TogglInterfaceError.prototype.ERROR_CODE_WORKSPACE_ID_UNAVAILABLE, null));
            });
         });
       }
