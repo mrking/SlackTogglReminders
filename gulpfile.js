@@ -36,7 +36,7 @@ gulp.task('pretest', function () {
 });
 
 gulp.task('test', function() {
-  return gulp.src('test/**/*.js')
+  return gulp.src('test/*.js')
 		// gulp-mocha needs filepaths so you can't have any plugins before it
 		.pipe(mocha({reporter: 'min'})) // Creating the reports after tests ran
     .pipe(istanbul.writeReports())
@@ -55,7 +55,7 @@ gulp.task('coveralls', ['test'], function () {
 
 
 gulp.task('lint', function() {
-  return gulp.src(['private/**/*.js', 'app/**/*.js', 'config/**/*.js', 'db/**/*.js', '**/*.es'])
+  return gulp.src(['app/*.js'])
     .pipe(jshint())
     .pipe(jshint.reporter('default'))
     .pipe(jshint.reporter('fail'));
@@ -84,6 +84,6 @@ gulp.task('development', function() {
 // it will start up as a watch program and run tasks as you modify files
 // its not async, so it locks up one of your terminal windows
 gulp.task('default', ['development', 'lint', 'pretest', 'test'], function() {
-  gulp.watch(['test/unit/*.js', 'app/**/*.js'], ['pretest', 'test']); // Pretest is caching covered class, need to fix before it useful
-  gulp.watch(['app/**/*.js', 'app/**/*.js', 'config/**/*.js', 'db/**/*.js'], ['lint']);
+  gulp.watch(['test/*.js', 'app/*.js'], ['pretest', 'test']); // Pretest is caching covered class, need to fix before it useful
+  gulp.watch(['app/*.js'], ['lint']);
 });
