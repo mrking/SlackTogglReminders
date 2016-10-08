@@ -26,7 +26,7 @@ describe("Our toggl API test account ", function() {
       it("BLAH", function() {
         var email = "lasdflaksdjflkasjdf@laksflasd.com";
 
-        toglAPI.getUser(email).then(function(user) {
+        togglAPI.getUser(email).then(function(user) {
           expect(err).to.exist;
           expect(user).to.equals('unable to find ' + email +  ' in toggl')
         });
@@ -34,7 +34,7 @@ describe("Our toggl API test account ", function() {
       it("BLAH", function() {
         var email = "new.overlord@gmail.com";
 
-        toglAPI.getUser(email).then(function(user) {
+        togglAPI.getUser(email).then(function(user) {
           expect(user.id).to.exist;
           expect(user.email).to.equals("new.overlord@gmail.com")
         });
@@ -43,7 +43,7 @@ describe("Our toggl API test account ", function() {
           var startPeriod = new Date();
           startPeriod.setDate(startPeriod.getDate() - USER_MIN_HOURS_IN_DAYS);
 
-          toglAPI.getTimeSpent(new Date, startPeriod, email).then(function(report) {
+          togglAPI.getTimeSpent(new Date, startPeriod, email).then(function(report) {
             expect(report).to.exist;
             //expect(user.email).to.equals("new.overlord@gmail.com")
           });
