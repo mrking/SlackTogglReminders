@@ -4,9 +4,9 @@ var TogglClient = require('toggl-api');
 var TOGGL_WORKSPACE_NAME = process.env.TOGGL_WORKSPACE_NAME;
 var TOGGL_API_TOKEN = process.env.TOGGL_API_TOKEN;
 
-var WorkspaceID = -1;
 var toggl = new TogglClient({apiToken: TOGGL_API_TOKEN});
 var UsersInToggl = {};
+var WorkspacesInToggl = {};
 
 var self = module.exports = {
   getCachedUsers: function() {
@@ -53,16 +53,16 @@ var self = module.exports = {
     },
     // returns a promise for the configured workspace ID in the config file.
     getWorkspaceID: function(workspaceName) {
-      if(WorkspaceID != -1) {
-          return Promise.resolve(WorkspaceID);
+      if(WorkspacesInToggl[workspaceName]) {
+          return Promise.resolve(WorkspacesInToggl[workspaceName].id);
       } else {
         return new Promise(function (resolve, reject) {
           toggl.getWorkspaces(function(err, workspaces) {
             for (var i = 0; i < workspaces.length; i++) {
               if(workspaceName == workspaces[i].name) {
-                 WorkspaceID = workspaces[i].id;
-                 console.info('Was able to resolve console ID to be ' + WorkspaceID);
-                 resolve(WorkspaceID);
+                 WorkspacesInToggl[workspaceName] = workspaces[i];
+                 console.info('Was able to resolve console ID to be ' + WorkspacesInToggl[workspaceName].id);
+                 resolve(WorkspacesInToggl[workspaceName].id);
                  return;
                }
              }
@@ -77,12 +77,14 @@ var self = module.exports = {
     getTimeSpent: function (start, end, email) {
       return new Promise(function(resolve, reject) {
         self.getUser(email).then(function(user) {
-        toggl.summaryReport({"grouping": "users", "workspace_id": WorkspaceID, "user_ids": user.id, "since": start.toISOString().slice(0,10), "until": end.toISOString().slice(0,10)}, function(err, report) {
-          if(err) {
-            reject(err);
-          } else {
-            resolve(report.total_grand / 3600000);
-          }
+          self.getWorkspaceID(TOGGL_WORKSPACE_NAME).then(function(WorkspaceID) {
+          toggl.summaryReport({"grouping": "users", "workspace_id": WorkspaceID, "user_ids": user.id, "since": start.toISOString().slice(0,10), "until": end.toISOString().slice(0,10)}, function(err, report) {
+            if(err) {
+              reject(err);
+            } else {
+              resolve(report.total_grand / 3600000);
+            }
+          });
         });
        });
      });
