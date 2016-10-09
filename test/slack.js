@@ -32,16 +32,16 @@ describe("Our slack API test account", function() {
           });
         });
         it("to not find ourself in a real users list", function() {
-          return Promise.all([slackAPI.getBotID, slackAPI.getRealUsers]).then(function(values) {
+          return Promise.all([slackAPI.getBotID(), slackAPI.getRealUsers()]).then(values => {
             var users = values[1];
-            console.log(values[0]());
+            //console.log(values[0]);
+            //console.log(values[1]);
             expect(values[0]).to.exist;
-            expect(values[0]).to.be.at.least(0);
             for (var i = 0; i < users.length; i++) {
-              console.log(users[i]);
+              //console.log(users[i]);
               expect(users[i]).to.exist;
-              expect(users[i].user_id).to.be.at.least(0);
-              expect(users[i].user_id).to.not.equal(values[0]);
+              expect(users[i].id).to.exist;
+              expect(users[i].id).to.not.equal(values[0]);
             }
           }, function() {
           });

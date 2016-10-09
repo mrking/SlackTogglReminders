@@ -36,7 +36,6 @@ var self = module.exports = {
         // test ws ID 1382104
         self.getUsers().then(function(users) {
           for (var i = 0; i <  users.length; i++) {
-
             UsersInSlack[users[i].email] = users[i];
           }
 
@@ -86,12 +85,13 @@ var self = module.exports = {
   getRealUsers: function() {
     return new Promise(function(resolve, reject) {
       self.getUsers().then(function(users) {
+        var new_users = [];
         for (var i = 0; i < users.length; i++) {
-          if(users[i].is_bot) {
-            users.splice(i, 1);
+          if(!users[i].is_bot) {
+            new_users.push(users[i]);
           }
         }
-        resolve(users);
+        resolve(new_users);
       });
     });
   },
