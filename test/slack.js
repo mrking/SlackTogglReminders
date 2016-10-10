@@ -11,23 +11,19 @@ describe("Our slack API test account", function() {
   describe("user", function() {
     it("should authenticate and have a bot name", function() {
       slackAPI.logoff();
-      return slackAPI.getBotName().then(function(name){
+      slackAPI.getBotName().then(function(name){
         expect(name.length).to.be.at.least(1);
       });
-    });
-    it("already authenticated and get a bot name", function() {
       return slackAPI.getBotName().then(function(name){
         expect(name.length).to.be.at.least(1);
       });
     });
     it("should authenticate and have a bot ID", function() {
       slackAPI.logoff();
-      return slackAPI.getBotID().then(function(name){
+      slackAPI.getBotID().then(function(name){
         console.log("BOT BOT BOT ID " + name);
         expect(name.length).to.be.at.least(1);
       });
-    });
-    it("already authenticated and have a bot ID", function() {
       return slackAPI.getBotID().then(function(name){
         console.log("BOT BOT BOT ID " + name);
         expect(name.length).to.be.at.least(1);
@@ -69,6 +65,7 @@ describe("Our slack API test account", function() {
     it("should be able to send a message to a user", function() {
       return slackAPI.getUser('new.overlord@gmail.com').then(function(user) {
         slackAPI.postMessageToUser('ALL HAIL TYRONE', user.id).then(function(result) {
+          console.log("slackbot id is " + user.id);
           expect(result).to.be.true;
         }, function(err) {
           expect(err).to.exist;
@@ -85,6 +82,10 @@ describe("Our slack API test account", function() {
           expect(err).to.exist;
         })
       });
-    })
+    });
+    it("must send notifications of type x to both channel and user", function() {
+      slackAPI.sendNotification("tyronetan", "test", "USER_MIN_HOURS", true);
+        slackAPI.sendNotification("tyronetan", "test 2", "USER_MIN_HOURS", true);
+    });
   });
 });
