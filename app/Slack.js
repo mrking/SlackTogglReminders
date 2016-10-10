@@ -140,5 +140,22 @@ var self = module.exports = {
     if(alsoSendToChannel) {
       self.postMessageToChannel(message);
     }
+  },
+  deleteDirectMessages: function(query) { //OPTIONAL ARGS - LIST OF USERS
+    slack.search.messages({token: SLACK_TOKEN, query: query}, function(err, data) {
+      if(err) {
+        console.log('search query is unsuccessful');
+        console.log(err);
+      }
+
+      if(data.ok) {
+        console.log('message query for ' + query + ' is successful');
+        data.matches.forEach(function(message) {
+          if(message.type=="im" && query.toLowerCase() == message.text.toLowerCase()) {
+            slack.chat.delete({token: SLACK_TOKEN, ts: message.ts, channel: message.channel.id});
+          }
+        });
+      }
+    });
   }
 };

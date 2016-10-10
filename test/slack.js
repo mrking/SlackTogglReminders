@@ -2,6 +2,8 @@ var expect = require("chai").expect;
 var assert = require('chai').assert;
 var slackAPI = require("../app/Slack.js");
 
+var DEBUG_MESSAGE = "ZYXWVUTSRQPONMLKJIHGFEDCBA";
+
 // These tests are not fully unit,
 // closer to being integration tests,
 // but achieve the same purpose.
@@ -67,11 +69,14 @@ describe("Our slack API test account", function() {
         slackAPI.postMessageToUser('ALL HAIL TYRONE', user.id).then(function(result) {
           console.log("slackbot id is " + user.id);
           expect(result).to.be.true;
+
+          //AFTER TESTING CLEAR OFF MESSAGES WITH DEBUG_MESSAGE
+          slackAPI.deleteDirectMessages('ALL HAIL TYRONE');
         }, function(err) {
           expect(err).to.exist;
         });
       });
-    })
+    });
     it("must throw an error when posting to a non-existent or inaccessible channel", function() {
       var channels = ['sith-lord-king', 'biz-setup'];
 
@@ -80,7 +85,7 @@ describe("Our slack API test account", function() {
           expect(result).to.be.true;
         }, function(err) {
           expect(err).to.exist;
-        })
+        });
       });
     });
     it("must send notifications of type x to both channel and user", function() {
