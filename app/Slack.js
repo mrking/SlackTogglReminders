@@ -117,7 +117,7 @@ var self = module.exports = {
       resolve(true);
     });
   },
-  postMessageToUser: function(userName, message) {
+  postMessageToUser: function(message, userName) {
     console.info('posting message to user %s: %s', userName, message);
     return self.postMessageToChannel(message, userName);
   },
@@ -133,7 +133,7 @@ var self = module.exports = {
       }
     }
     _sent_notifications[userName][notificationType] = new Date();
-    self.postMessageToUser(userName, message);
+    self.postMessageToUser(message, userName);
     if(alsoSendToChannel) {
       self.postMessageToChannel(message);
     }

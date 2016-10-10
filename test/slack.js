@@ -53,10 +53,13 @@ describe("Our slack API test account", function() {
       });
     });
     it("should be able to send a message to a user", function() {
-      return slackAPI.postMessageToUser('ALL HAIL TYRONE', 'slackbot').then(function(result) {
-        expect(result).to.be.true;
-      }, function(err) {
-        expect(err).to.exist;
+      return slackAPI.getUser('new.overlord@gmail.com').then(function(user) {
+        console.log(user);
+        slackAPI.postMessageToUser('ALL HAIL TYRONE', user.id).then(function(result) {
+          expect(result).to.be.true;
+        }, function(err) {
+          expect(err).to.exist;
+        });
       });
     })
     it("must throw an error when posting to a non-existent or inaccessible channel", function() {
