@@ -10,12 +10,26 @@ describe("Our slack API test account", function() {
   this.timeout(10000);
   describe("user", function() {
     it("should authenticate and have a bot name", function() {
+      slackAPI.logoff();
+      return slackAPI.getBotName().then(function(name){
+        expect(name.length).to.be.at.least(1);
+      });
+    });
+    it("already authenticated and get a bot name", function() {
       return slackAPI.getBotName().then(function(name){
         expect(name.length).to.be.at.least(1);
       });
     });
     it("should authenticate and have a bot ID", function() {
+      slackAPI.logoff();
       return slackAPI.getBotID().then(function(name){
+        console.log("BOT BOT BOT ID " + name);
+        expect(name.length).to.be.at.least(1);
+      });
+    });
+    it("already authenticated and have a bot ID", function() {
+      return slackAPI.getBotID().then(function(name){
+        console.log("BOT BOT BOT ID " + name);
         expect(name.length).to.be.at.least(1);
       });
     });
@@ -54,7 +68,6 @@ describe("Our slack API test account", function() {
     });
     it("should be able to send a message to a user", function() {
       return slackAPI.getUser('new.overlord@gmail.com').then(function(user) {
-        console.log(user);
         slackAPI.postMessageToUser('ALL HAIL TYRONE', user.id).then(function(result) {
           expect(result).to.be.true;
         }, function(err) {

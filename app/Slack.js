@@ -10,6 +10,9 @@ var _sent_notifications = {};
 var _selfAuth = null;
 
 var self = module.exports = {
+  logoff: function() {
+    _selfAuth = null;
+  },
   getBotName: function() {
     if(_selfAuth) {
       return Promise.resolve(_selfAuth.user);
