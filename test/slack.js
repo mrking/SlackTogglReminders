@@ -68,10 +68,10 @@ describe("Our slack API test account", function() {
       return slackAPI.getUser('new.overlord@gmail.com').then(function(user) {
         slackAPI.postMessageToUser('ALL HAIL TYRONE', user.id).then(function(result) {
           console.log("slackbot id is " + user.id);
-          expect(result).to.be.true;
-
           //AFTER TESTING CLEAR OFF MESSAGES WITH DEBUG_MESSAGE
           slackAPI.deleteDirectMessages('ALL HAIL TYRONE');
+          expect(result).to.be.true;
+
         }, function(err) {
           expect(err).to.exist;
         });
@@ -89,8 +89,8 @@ describe("Our slack API test account", function() {
       });
     });
     it("must send notifications of type x to both channel and user", function() {
-      slackAPI.sendNotification("tyronetan", "test", "USER_MIN_HOURS", true);
-        slackAPI.sendNotification("tyronetan", "test 2", "USER_MIN_HOURS", true);
+      slackAPI.sendNotification("slackbot", "test", "USER_MIN_HOURS", true);
+      slackAPI.sendNotification("slackbot", "test 2", "USER_MIN_HOURS", true);
     });
   });
 });

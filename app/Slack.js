@@ -4,6 +4,7 @@ var slack = require('slack');
 var SLACK_TOKEN = process.env.SLACK_TOKEN;
 var SLACK_CHANNEL_NAME = process.env.SLACK_CHANNEL_NAME;
 var SLACK_NOTIFICATION_LIMIT_PERIOD = process.env.SLACK_NOTIFICATION_LIMIT_PERIOD;
+var ADMIN_SLACK_TOKEN = process.env.ADMIN_SLACK_TOKEN;
 
 var UsersInSlack = {};
 var _sent_notifications = {};
@@ -142,17 +143,28 @@ var self = module.exports = {
     }
   },
   deleteDirectMessages: function(query) { //OPTIONAL ARGS - LIST OF USERS
-    slack.search.messages({token: SLACK_TOKEN, query: query}, function(err, data) {
+    slack.search.messages({token: ADMIN_SLACK_TOKEN, query: query}, function(err, data) {
+
       if(err) {
         console.log('search query is unsuccessful');
         console.log(err);
+        return;
+      } else {
+        console.log(data);
       }
 
-      if(data.ok) {
+      if(data.messages.total > 0) {
         console.log('message query for ' + query + ' is successful');
         data.matches.forEach(function(message) {
+          console.log('in message loop');
           if(message.type=="im" && query.toLowerCase() == message.text.toLowerCase()) {
-            slack.chat.delete({token: SLACK_TOKEN, ts: message.ts, channel: message.channel.id});
+            slack.chat.delete({token: ADMIN_SLACK_TOKEN, ts: message.ts, channel: message.channel.id}, function(err, data) {
+              if (err)
+                console.log(err);
+              else {
+                console.log(data);
+              }
+            });
           }
         });
       }
