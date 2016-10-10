@@ -102,14 +102,19 @@ var self = module.exports = {
     }
 
     console.info('posting message to channel: %s', message);
-    slack.chat.postMessage({
-      token: SLACK_TOKEN,
-      channel: channel,
-      text: message,
-      as_user: true
-    }, function(err){
-      if(err)
-      console.error('unable to post message to channel: ' + err);
+    return new Promise(function(resolve, reject) {
+      slack.chat.postMessage({
+        token: SLACK_TOKEN,
+        channel: channel,
+        text: message,
+        as_user: true
+      }, function(err){
+        if(err) {
+          console.error('unable to post message to channel: ' + err);
+          reject(err);
+        }
+      });
+      resolve(true);
     });
   },
   postMessageToUser: function(userName, message) {

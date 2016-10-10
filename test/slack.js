@@ -44,4 +44,24 @@ describe("Our slack API test account", function() {
           });
         });
     });
+    describe("posting a message", function() {
+      it("should be able to post a message with or without channel details", function() {
+        return slackAPI.postMessageToChannel('Hello from the other side').then(function(result) {
+          expect(result).to.be.true;
+        }, function(err) {
+          expect(err).to.exist;
+        });
+      });
+      it("must throw an error when posting to a non-existent or inaccessible channel", function() {
+        var channels = ['sith-lord-king', 'biz-setup'];
+
+        channels.forEach(function(channel) {
+          return slackAPI.postMessageToChannel("Once more the Sith will rule the galaxy, and we shall have peace", channel).then(function(result) {
+            expect(result).to.be.true;
+          }, function(err) {
+            expect(err).to.exist;
+          })
+        });
+      })
+    });
 });
