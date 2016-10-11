@@ -155,17 +155,15 @@ var self = module.exports = {
 
       if(data.messages.total > 0) {
         console.log('message query for ' + query + ' is successful');
-        data.matches.forEach(function(message) {
-          console.log('in message loop');
+        var affixes = ['previous', 'previous_2', 'next', 'next_2'];
+        data.messages.matches.forEach(function(message) {
           if(message.type=="im" && query.toLowerCase() == message.text.toLowerCase()) {
-            slack.chat.delete({token: ADMIN_SLACK_TOKEN, ts: message.ts, channel: message.channel.id}, function(err, data) {
-              if (err)
-                console.log(err);
-              else {
-                console.log(data);
-              }
-            });
+            slack.chat.delete({token: SLACK_TOKEN, ts: message.ts, channel: message.channel.id});
           }
+          affixes.forEach(function(text) {
+            if(message[text] && message[text].text.toLowerCase() == query.toLowerCase())
+              slack.chat.delete({token: SLACK_TOKEN, ts: message[text].ts, channel: message.channel.id});
+          });
         });
       }
     });

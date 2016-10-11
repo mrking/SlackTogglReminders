@@ -69,7 +69,7 @@ describe("Our slack API test account", function() {
         slackAPI.postMessageToUser('ALL HAIL TYRONE', user.id).then(function(result) {
           console.log("slackbot id is " + user.id);
           //AFTER TESTING CLEAR OFF MESSAGES WITH DEBUG_MESSAGE
-          slackAPI.deleteDirectMessages('ALL HAIL TYRONE');
+          slackAPI.deleteDirectMessages('Hello from the other side, I must have called a thousand times');
           expect(result).to.be.true;
 
         }, function(err) {
