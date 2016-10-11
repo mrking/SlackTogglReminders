@@ -142,29 +142,45 @@ var self = module.exports = {
       self.postMessageToChannel(message);
     }
   },
-  deleteDirectMessages: function(query) { //OPTIONAL ARGS - LIST OF USERS
+  deleteDirectMessages: function(query) { //SHOULD HAVE OPTIONAL ARGS - LIST OF USERS
     slack.search.messages({token: ADMIN_SLACK_TOKEN, query: query}, function(err, data) {
-
       if(err) {
         console.log('search query is unsuccessful');
-        console.log(err);
-        return;
-      } else {
-        console.log(data);
+        return err;
       }
 
       if(data.messages.total > 0) {
         console.log('message query for ' + query + ' is successful');
-        var affixes = ['previous', 'previous_2', 'next', 'next_2'];
+        var affixes = ['previous', 'previous_2', 'text', 'next', 'next_2'];
+        var result = {
+          successful_count: 0,
+          fail_count: 0,
+          ok: false
+        };
         data.messages.matches.forEach(function(message) {
-          if(message.type=="im" && query.toLowerCase() == message.text.toLowerCase()) {
-            slack.chat.delete({token: SLACK_TOKEN, ts: message.ts, channel: message.channel.id});
-          }
+          //code below is to loop through the messages considered to be part of the parent timestamp and delete them if they match the query
           affixes.forEach(function(text) {
-            if(message[text] && message[text].text.toLowerCase() == query.toLowerCase())
-              slack.chat.delete({token: SLACK_TOKEN, ts: message[text].ts, channel: message.channel.id});
+            if(message[text] && message.type== message[text].text.toLowerCase() == query.toLowerCase()) {
+              if (text == "text") {
+                slack.chat.delete({token: SLACK_TOKEN, ts: message.ts, channel: message.channel.id}, function(err, data) {
+                  if (err)
+                    result.fail_count++;
+                  else
+                    result.successful_count++;
+                });
+              } else {
+                slack.chat.delete({token: SLACK_TOKEN, ts: message[text].ts, channel: message.channel.id}, function(err, data) {
+                  if (err)
+                    result.fail_count++;
+                  else
+                    result.successful_count++;
+                });
+              }
+            }
           });
         });
+        result.ok = result.successful_count > 0;
+        return result;
       }
     });
   }

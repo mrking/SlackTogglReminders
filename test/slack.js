@@ -58,18 +58,20 @@ describe("Our slack API test account", function() {
   });
   describe("posting a message", function() {
     it("should be able to post a message with or without channel details", function() {
-      return slackAPI.postMessageToChannel('Hello from the other side').then(function(result) {
+      return slackAPI.postMessageToChannel(DEBUG_MESSAGE).then(function(result) {
         expect(result).to.be.true;
       }, function(err) {
         expect(err).to.exist;
       });
     });
-    it("should be able to send a message to a user", function() {
+    it("should be able to send a message to a user and delete old debug messages", function() {
       return slackAPI.getUser('new.overlord@gmail.com').then(function(user) {
-        slackAPI.postMessageToUser('ALL HAIL TYRONE', user.id).then(function(result) {
+        slackAPI.postMessageToUser(DEBUG_MESSAGE, user.id).then(function(result) {
           console.log("slackbot id is " + user.id);
           //AFTER TESTING CLEAR OFF MESSAGES WITH DEBUG_MESSAGE
-          slackAPI.deleteDirectMessages('Hello from the other side, I must have called a thousand times');
+          var deleteResponse = slackAPI.deleteDirectMessages('ALL HAIL TYRONE');
+          expect(deleteResponse).to.exist;
+          expect(deleteResponse.successful_count).to.be.at.least(0);
           expect(result).to.be.true;
 
         }, function(err) {
@@ -89,8 +91,8 @@ describe("Our slack API test account", function() {
       });
     });
     it("must send notifications of type x to both channel and user", function() {
-      slackAPI.sendNotification("slackbot", "test", "USER_MIN_HOURS", true);
-      slackAPI.sendNotification("slackbot", "test 2", "USER_MIN_HOURS", true);
+      slackAPI.sendNotification("slackbot", "USER_MIN_HOURS", DEBUG_MESSAGE, true);
+      slackAPI.sendNotification("slackbot", "USER_MIN_HOURS", DEBUG_MESSAGE, true);
     });
   });
 });
