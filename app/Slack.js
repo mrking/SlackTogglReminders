@@ -4,6 +4,7 @@ var slack = require('slack');
 var SLACK_TOKEN = process.env.SLACK_TOKEN;
 var SLACK_CHANNEL_NAME = process.env.SLACK_CHANNEL_NAME;
 var SLACK_NOTIFICATION_LIMIT_PERIOD = process.env.SLACK_NOTIFICATION_LIMIT_PERIOD;
+var ADMIN_SLACK_TOKEN = process.env.ADMIN_SLACK_TOKEN;
 
 var UsersInSlack = {};
 var _sent_notifications = {};
@@ -140,5 +141,50 @@ var self = module.exports = {
     if(alsoSendToChannel) {
       self.postMessageToChannel(message);
     }
+  },
+  deleteChannelMessages: function(quer) {
+
+  },
+  deleteDirectMessages: function(query) { //SHOULD HAVE OPTIONAL ARGS - LIST OF USERS
+    slack.search.messages({token: ADMIN_SLACK_TOKEN, query: query}, function(err, data) {
+      if(err) {
+        console.log('search query is unsuccessful');
+        return err;
+      }
+
+      if(data.messages.total > 0) {
+        console.log('message query for ' + query + ' is successful');
+        var affixes = ['previous', 'previous_2', 'next', 'next_2'];
+        var result = {
+          successful_count: 0,
+          fail_count: 0,
+          ok: false
+        };
+        data.messages.matches.forEach(function(message) {
+          //code below is to loop through the messages considered to be part of the parent timestamp and delete them if they match the query
+          affixes.forEach(function(text) {
+            if(message[text] && message.type=="im") {
+              if (text == "text" && message.text.toLowerCase() == query.toLowerCase()) {
+                slack.chat.delete({token: SLACK_TOKEN, ts: message.ts, channel: message.channel.id}, function(err, data) {
+                  if (err)
+                    result.fail_count++;
+                  else
+                    result.successful_count++;
+                });
+              } else if (message[text].text.toLowerCase() == query.toLowerCase()){
+                slack.chat.delete({token: SLACK_TOKEN, ts: message[text].ts, channel: message.channel.id}, function(err, data) {
+                  if (err)
+                    result.fail_count++;
+                  else
+                    result.successful_count++;
+                });
+              }
+            }
+          });
+        });
+        result.ok = result.successful_count > 0;
+        return result;
+      }
+    });
   }
 };

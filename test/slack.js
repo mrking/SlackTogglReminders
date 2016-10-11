@@ -2,6 +2,8 @@ var expect = require("chai").expect;
 var assert = require('chai').assert;
 var slackAPI = require("../app/Slack.js");
 
+var DEBUG_MESSAGE = "ZYXWVUTSRQPONMLKJIHGFEDCBA";
+
 // These tests are not fully unit,
 // closer to being integration tests,
 // but achieve the same purpose.
@@ -11,23 +13,19 @@ describe("Our slack API test account", function() {
   describe("user", function() {
     it("should authenticate and have a bot name", function() {
       slackAPI.logoff();
-      return slackAPI.getBotName().then(function(name){
+      slackAPI.getBotName().then(function(name){
         expect(name.length).to.be.at.least(1);
       });
-    });
-    it("already authenticated and get a bot name", function() {
       return slackAPI.getBotName().then(function(name){
         expect(name.length).to.be.at.least(1);
       });
     });
     it("should authenticate and have a bot ID", function() {
       slackAPI.logoff();
-      return slackAPI.getBotID().then(function(name){
+      slackAPI.getBotID().then(function(name){
         console.log("BOT BOT BOT ID " + name);
         expect(name.length).to.be.at.least(1);
       });
-    });
-    it("already authenticated and have a bot ID", function() {
       return slackAPI.getBotID().then(function(name){
         console.log("BOT BOT BOT ID " + name);
         expect(name.length).to.be.at.least(1);
@@ -60,21 +58,27 @@ describe("Our slack API test account", function() {
   });
   describe("posting a message", function() {
     it("should be able to post a message with or without channel details", function() {
-      return slackAPI.postMessageToChannel('Hello from the other side').then(function(result) {
+      return slackAPI.postMessageToChannel(DEBUG_MESSAGE).then(function(result) {
         expect(result).to.be.true;
       }, function(err) {
         expect(err).to.exist;
       });
     });
-    it("should be able to send a message to a user", function() {
+    it("should be able to send a message to a user and delete old debug messages", function() {
       return slackAPI.getUser('new.overlord@gmail.com').then(function(user) {
-        slackAPI.postMessageToUser('ALL HAIL TYRONE', user.id).then(function(result) {
+        slackAPI.postMessageToUser(DEBUG_MESSAGE, user.id).then(function(result) {
+          console.log("slackbot id is " + user.id);
+          //AFTER TESTING CLEAR OFF MESSAGES WITH DEBUG_MESSAGE
+          var deleteResponse = slackAPI.deleteDirectMessages(DEBUG_MESSAGE);
+          expect(deleteResponse).to.exist;
+          expect(deleteResponse.successful_count).to.be.at.least(0);
           expect(result).to.be.true;
+
         }, function(err) {
           expect(err).to.exist;
         });
       });
-    })
+    });
     it("must throw an error when posting to a non-existent or inaccessible channel", function() {
       var channels = ['sith-lord-king', 'biz-setup'];
 
@@ -83,8 +87,12 @@ describe("Our slack API test account", function() {
           expect(result).to.be.true;
         }, function(err) {
           expect(err).to.exist;
-        })
+        });
       });
-    })
+    });
+    it("must send notifications of type x to both channel and user", function() {
+      slackAPI.sendNotification("slackbot", "USER_MIN_HOURS", DEBUG_MESSAGE, true);
+      slackAPI.sendNotification("slackbot", "USER_MIN_HOURS", DEBUG_MESSAGE, true);
+    });
   });
 });

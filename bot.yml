@@ -18,6 +18,11 @@ config:
     type: text
     default: 24
     global: true
+  - name: ADMIN_SLACK_TOKEN
+    friendly_name: Admin slack token to allow the bot to run administrative API
+    info: Human API slack token (tyrone's tester token)
+    type: secret
+    global: true
   - name: TOGGL_API_TOKEN
     friendly_name: Toggl API Token
     info: Your toggl API token to access time submission for a workspace
