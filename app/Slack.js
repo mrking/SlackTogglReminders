@@ -142,6 +142,9 @@ var self = module.exports = {
       self.postMessageToChannel(message);
     }
   },
+  deleteChannelMessages: function(quer) {
+
+  },
   deleteDirectMessages: function(query) { //SHOULD HAVE OPTIONAL ARGS - LIST OF USERS
     slack.search.messages({token: ADMIN_SLACK_TOKEN, query: query}, function(err, data) {
       if(err) {

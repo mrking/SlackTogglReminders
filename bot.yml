@@ -21,7 +21,7 @@ config:
   - name: ADMIN_SLACK_TOKEN
     friendly_name: Admin slack token to allow the bot to run administrative API
     info: Human API slack token (tyrone's tester token)
-    type: text
+    type: secret
     global: true
   - name: TOGGL_API_TOKEN
     friendly_name: Toggl API Token
