@@ -151,7 +151,7 @@ var self = module.exports = {
 
       if(data.messages.total > 0) {
         console.log('message query for ' + query + ' is successful');
-        var affixes = ['previous', 'previous_2', 'text', 'next', 'next_2'];
+        var affixes = ['previous', 'previous_2', 'next', 'next_2'];
         var result = {
           successful_count: 0,
           fail_count: 0,
@@ -160,15 +160,15 @@ var self = module.exports = {
         data.messages.matches.forEach(function(message) {
           //code below is to loop through the messages considered to be part of the parent timestamp and delete them if they match the query
           affixes.forEach(function(text) {
-            if(message[text] && message.type== message[text].text.toLowerCase() == query.toLowerCase()) {
-              if (text == "text") {
+            if(message[text] && message.type=="im") {
+              if (text == "text" && message.text.toLowerCase() == query.toLowerCase()) {
                 slack.chat.delete({token: SLACK_TOKEN, ts: message.ts, channel: message.channel.id}, function(err, data) {
                   if (err)
                     result.fail_count++;
                   else
                     result.successful_count++;
                 });
-              } else {
+              } else if (message[text].text.toLowerCase() == query.toLowerCase()){
                 slack.chat.delete({token: SLACK_TOKEN, ts: message[text].ts, channel: message.channel.id}, function(err, data) {
                   if (err)
                     result.fail_count++;
