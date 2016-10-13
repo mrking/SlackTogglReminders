@@ -57,9 +57,15 @@ describe("Our slack API test account", function() {
     });
   });
   describe("posting a message", function() {
-    it("should be able to post a message with or without channel details", function() {
+    it("should be able to post a message with or without channel details and delete the messages after", function() {
+      // var count = slackAPI.searchMessages(DEBUG_MESSAGE);
+      // console.log("TESTING SEARCH MESSAGES: COUNT OF " + count);
       return slackAPI.postMessageToChannel(DEBUG_MESSAGE).then(function(result) {
+        // expect(slackAPI.searchMessages(DEBUG_MESSAGE)).to.equal(count+1);
         expect(result).to.equal(process.env.SLACK_CHANNEL_NAME);
+        var deleteResponse = slackAPI.deleteChannelMessages(DEBUG_MESSAGE);
+        expect(deleteResponse).to.exist;
+        expect(deleteResponse.successful_count).to.be.at.least(0);
         //TODO FIX This Test now that it returns the channel name it posted too
       });
     });
@@ -95,6 +101,9 @@ describe("Our slack API test account", function() {
     it("must send notifications of type x to both channel and user", function() {
       slackAPI.sendNotification("slackbot", "USER_MIN_HOURS", DEBUG_MESSAGE, true);
       slackAPI.sendNotification("slackbot", "USER_MIN_HOURS", DEBUG_MESSAGE, true);
+    });
+    it("should delete all the debug messages by select user(s)", function() {
+      var deleteDMResponse = slackAPI.deleteDirectMessages(DEBUG_MESSAGE, 'togglebot4');
     });
   });
 });

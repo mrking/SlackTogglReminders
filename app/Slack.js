@@ -10,6 +10,11 @@ var UsersInSlack = {};
 var _sent_notifications = {};
 var _selfAuth = null;
 
+function SlackResponse(result, err) {
+  this.result = result;
+  this.error = err;
+}
+
 var self = module.exports = {
   logoff: function() {
     _selfAuth = null;
@@ -113,6 +118,7 @@ var self = module.exports = {
         text: message,
         as_user: true
       }, function(err){
+        var response = new SlackResponse((err), err);
         if(err) {
           console.error('unable to post message to channel %s : %s ', channel, err);
           reject(err);
@@ -145,10 +151,51 @@ var self = module.exports = {
       self.postMessageToChannel(message);
     }
   },
-  deleteChannelMessages: function(quer) {
+  // searchMessages: function(query, channel) {
+  //   return slack.search.messages({token: ADMIN_SLACK_TOKEN, query: query}, function(err, data) {
+  //     if(err || data.messages.total === 0) {
+  //       console.log('search query is unsuccessful');
+  //       reject(err);
+  //     }
+  //
+  //
+  //     this.match_count = 0;
+  //     var affixes = ['previous', 'previous_2', 'next', 'next_2'];
+  //
+  //     if (channel) {
+  //       data.messages.matches.forEach(function(message) {
+  //         if(message.channel.name == channel) {
+  //           if(message.text.toLowerCase() == query.toLowerCase())
+  //             match_count++;
+  //
+  //           affixes.forEach(function(text) {
+  //             if(message[text].text.toLowerCase() == query.toLowerCase())
+  //               match_count++;
+  //           });
+  //         }
+  //       });
+  //       resolve(match_count);
+  //     } else {
+  //       console.log('----------------------------');
+  //       data.messages.matches.forEach(function(message) {
+  //         if(message.text.toLowerCase() == query.toLowerCase())
+  //           this.match_count++;
+  //
+  //         affixes.forEach(function(text) {
+  //           if(message[text].text.toLowerCase() == query.toLowerCase())
+  //           this.match_count++;
+  //         });
+  //       });
+  //       resolve(match_count);
+  //     }
+  //   });
+  // },
+  deleteMessages: function(query, type) {
+    var matchUsers = Array.prototype.slice.call(arguments, 3);
+    var userMatchSearch = (matchUsers && matchUsers.length > 0);
 
-  },
-  deleteDirectMessages: function(query) { //SHOULD HAVE OPTIONAL ARGS - LIST OF USERS
+    console.log("matchUsers: ");
+    console.log(matchUsers);
     slack.search.messages({token: ADMIN_SLACK_TOKEN, query: query}, function(err, data) {
       if(err) {
         console.log('search query is unsuccessful');
@@ -157,30 +204,49 @@ var self = module.exports = {
 
       if(data.messages.total > 0) {
         console.log('message query for ' + query + ' is successful');
-        var affixes = ['previous', 'previous_2', 'next', 'next_2'];
+        var affixes = ['previous', 'previous_2', 'text', 'next', 'next_2'];
         var result = {
           successful_count: 0,
           fail_count: 0,
           ok: false
         };
         data.messages.matches.forEach(function(message) {
-          //code below is to loop through the messages considered to be part of the parent timestamp and delete them if they match the query
-          affixes.forEach(function(text) {
-            if(message[text] && message.type=="im") {
+          //code below loops through the messages chained to the parent timestamp and deletes them if they match the query
+          affixes.forEach(function(text) {    //TODO FIX THIS NESTED IF STRUCTURE!!!!!
+            if(message[text] && message.type==type) {
               if (text == "text" && message.text.toLowerCase() == query.toLowerCase()) {
-                slack.chat.delete({token: SLACK_TOKEN, ts: message.ts, channel: message.channel.id}, function(err, data) {
-                  if (err)
+                if (userMatchSearch && matchUsers.includes(message.username)) {
+                  slack.chat.delete({token: SLACK_TOKEN, ts: message.ts, channel: message.channel.id}, function(err, data) {
+                    if (err)
                     result.fail_count++;
-                  else
+                    else
                     result.successful_count++;
-                });
+                  });
+                } else {
+                  slack.chat.delete({token: SLACK_TOKEN, ts: message.ts, channel: message.channel.id}, function(err, data) {
+                    if (err)
+                    result.fail_count++;
+                    else
+                    result.successful_count++;
+                  });
+                }
               } else if (message[text].text.toLowerCase() == query.toLowerCase()){
-                slack.chat.delete({token: SLACK_TOKEN, ts: message[text].ts, channel: message.channel.id}, function(err, data) {
-                  if (err)
+
+                if (userMatchSearch && matchUsers.includes(message[text].username)) {
+                  slack.chat.delete({token: SLACK_TOKEN, ts: message[text].ts, channel: message.channel.id}, function(err, data) {
+                    if (err)
                     result.fail_count++;
-                  else
+                    else
                     result.successful_count++;
-                });
+                  });
+                } else {
+                  slack.chat.delete({token: SLACK_TOKEN, ts: message[text].ts, channel: message.channel.id}, function(err, data) {
+                    if (err)
+                    result.fail_count++;
+                    else
+                    result.successful_count++;
+                  });
+                }
               }
             }
           });
@@ -189,5 +255,11 @@ var self = module.exports = {
         return result;
       }
     });
+  },
+  deleteChannelMessages: function(query) { //SHOULD HAVE OPTIONAL ARGS - LIST OF USERS
+    return this.deleteMessages(query, "message", arguments);
+  },
+  deleteDirectMessages: function(query) {
+    return this.deleteMessages(query, "im", arguments);
   }
 };
