@@ -59,9 +59,8 @@ describe("Our slack API test account", function() {
   describe("posting a message", function() {
     it("should be able to post a message with or without channel details", function() {
       return slackAPI.postMessageToChannel(DEBUG_MESSAGE).then(function(result) {
-        expect(result).to.be.true;
-      }, function(err) {
-        expect(err).to.exist;
+        expect(result).to.equal(process.env.SLACK_CHANNEL_NAME);
+        //TODO FIX This Test now that it returns the channel name it posted too
       });
     });
     it("should be able to send a message to a user and delete old debug messages", function() {
@@ -80,14 +79,17 @@ describe("Our slack API test account", function() {
       });
     });
     it("must throw an error when posting to a non-existent or inaccessible channel", function() {
-      var channels = ['sith-lord-king', 'biz-setup'];
-
-      channels.forEach(function(channel) {
-        return slackAPI.postMessageToChannel("Once more the Sith will rule the galaxy, and we shall have peace", channel).then(function(result) {
-          expect(result).to.be.true;
-        }, function(err) {
-          expect(err).to.exist;
-        });
+      var channelsCannotPost = ['sith-lord-king', 'biz-setup'];
+      return slackAPI.postMessageToChannel("Should not see this message", channelsCannotPost[0])
+       .then(function(){
+        assert.fail(0, 1, 'Expected a denied channel to throw an error on message send' + channelsCannotPost[0]);
+      }, function(err) {
+        return slackAPI.postMessageToChannel("Should not see this message", channelsCannotPost[1]);
+      }).then(function(){
+        assert.fail(0, 1, 'Expected a denied channel to throw an error on message send' + channelsCannotPost[1]);
+      }, function()
+      {
+        // expected this final error... all good
       });
     });
     it("must send notifications of type x to both channel and user", function() {
