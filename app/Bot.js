@@ -1,7 +1,7 @@
 var togglAPI = require('./Toggl.js');
 var slackAPI = require('./Slack.js');
 var slack = require('slack');
-var bot = slack.rtm.client();
+var bot = require('botkit');
 
 
 // CONST
@@ -11,23 +11,32 @@ var USER_MIN_HOURS = process.env.USER_MIN_HOURS;
 var USER_MIN_HOURS_CHECK_FREQUENCY = process.env.USER_MIN_HOURS_CHECK_FREQUENCY;  //in milliseconds
 var USER_MIN_HOURS_IN_DAYS = process.env.USER_MIN_HOURS_IN_DAYS;
 
+
+var controller = bot.slackbot({
+  debug: false
+});
+
+
 // Do not start up the bot if we are running unit testing only
 if(!process.env.SLACK_TOGGLE_BOT_TEST) {
   // do something with the rtm.start payload
-  bot.started(function(payload) {
-      console.log('bot starting, setting RunUserHoursCheck on interval %d', USER_MIN_HOURS_CHECK_FREQUENCY);
-      slackAPI.getBotName().then(function(name){
-        console.log('connected to slack and my name is %s', name);
-      });
-      setInterval(RunUserHoursCheck, USER_MIN_HOURS_CHECK_FREQUENCY);
-  });
+  // connect the bot to a stream of messages
+  controller.spawn({
+    token: SLACK_TOKEN,
+  }).startRTM();
 
-  bot.message(parseMessages);
-
-  bot.listen({
-      token: SLACK_TOKEN
-  });
+  // Setup Routines
+  setInterval(RunUserHoursCheck, USER_MIN_HOURS_CHECK_FREQUENCY);
 }
+
+var help = "You may use the following commands: \n" +
+           "Report [Email-Address] (Optional:Timeframe in Days) (Optional:Offset in Hours) \n";
+
+controller.hears(['hello', 'help'],['direct_message','direct_mention','mention'],
+  function(bot,message) {
+    bot.reply(message, help);
+  }
+);
 
 function parseMessages(message) {
   // message.text
