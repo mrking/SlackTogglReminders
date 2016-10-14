@@ -94,12 +94,13 @@ var self = module.exports = {
   getChannelID: function(channel_name) {
     return new Promise(function(resolve, reject) {
       self.getChannels().then(function(channels) {
-        for(var i = 0; i < data.channels.length; i++) {
-          console.log(data.channels[i]);
-          if(data.channels[i].name == channel_name){
-            resolve(data.channels[i].id);
+        for(var i = 0; i < channels.length; i++) {
+          if(channels[i].name == channel_name){
+            resolve(channels[i].id);
+            return;
           }
         }
+        reject('no channel found');
       });
     });
   },
