@@ -78,6 +78,31 @@ var self = module.exports = {
       });
     }
   },
+  getChannels: function() {
+    return new Promise(function(resolve, reject) {
+      slack.channels.list({token: SLACK_TOKEN}, function(err, data) {
+        if (err) {
+          reject(err);
+          return;
+        } else {
+          resolve(data.channels);
+          return;
+        }
+      });
+    });
+  },
+  getChannelID: function(channel_name) {
+    return new Promise(function(resolve, reject) {
+      self.getChannels().then(function(channels) {
+        for(var i = 0; i < data.channels.length; i++) {
+          console.log(data.channels[i]);
+          if(data.channels[i].name == channel_name){
+            resolve(data.channels[i].id);
+          }
+        }
+      });
+    });
+  },
   getUsers: function() {
     return new Promise(function(resolve, reject) {
       slack.users.list({token: SLACK_TOKEN}, function(err, data) {
@@ -256,8 +281,33 @@ var self = module.exports = {
       }
     });
   },
-  deleteChannelMessages: function(query) { //SHOULD HAVE OPTIONAL ARGS - LIST OF USERS
-    return this.deleteMessages(query, "message", arguments);
+  deleteChannelMessages: function(channel, query) { //SHOULD HAVE OPTIONAL ARGS - LIST OF USERS
+    var deleteEverything = !(query);
+
+    return self.getChannelID(channel).then(function(channel_id) {
+
+      console.log("channel _" + channel + " ID is " + channel_id);
+      console.log(channel_id);
+
+      return new Promise(function(resolve, reject) {
+        slack.channels.history({token: SLACK_TOKEN, channel: channel_id, count: 10000}, function(err, data) {
+          var result = true;
+          data.messages.forEach(function(message) {
+            if (deleteEverything) {
+              slack.chat.delete({token: SLACK_TOKEN, ts: message.ts, channel: channel_id}, function(err) {
+                if (err)
+                result = false;
+              });
+            } else if (query.toLowerCase() == message.text.toLowerCase()) {
+              slack.chat.delete({token: SLACK_TOKEN, ts: message.ts, channel: channel_id}, function(err) {
+                if (err)
+                result = false;
+              });
+            }
+          });
+        });
+      });
+    });
   },
   deleteDirectMessages: function(query) {
     return this.deleteMessages(query, "im", arguments);

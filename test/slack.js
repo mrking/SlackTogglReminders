@@ -63,9 +63,8 @@ describe("Our slack API test account", function() {
       return slackAPI.postMessageToChannel(DEBUG_MESSAGE).then(function(result) {
         // expect(slackAPI.searchMessages(DEBUG_MESSAGE)).to.equal(count+1);
         expect(result).to.equal(process.env.SLACK_CHANNEL_NAME);
-        var deleteResponse = slackAPI.deleteChannelMessages(DEBUG_MESSAGE);
-        expect(deleteResponse).to.exist;
-        expect(deleteResponse.successful_count).to.be.at.least(0);
+        var deleteResponse = slackAPI.deleteChannelMessages(process.env.SLACK_CHANNEL_NAME, DEBUG_MESSAGE);
+        expect(deleteResponse).to.be.true;
         //TODO FIX This Test now that it returns the channel name it posted too
       });
     });
