@@ -1,6 +1,5 @@
 var expect = require("chai").expect;
 var assert = require('chai').assert;
-process.env.SLACK_TOGGLE_BOT_TEST = true; // PREVENT BOT FROM STARTING UP
 var bot = require("../app/Bot.js");
 var slackAPI = require('../app/Slack.js');
 

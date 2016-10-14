@@ -26,8 +26,12 @@ function handleError(err) {
   this.emit('end');
 }
 
+gulp.task('test-env-variables', function() {
+  process.env.SLACK_TOGGLE_BOT_TEST = true; // PREVENT BOT FROM STARTING UP
+});
 
-gulp.task('pretest', function () {
+
+gulp.task('pretest', ['test-env-variables'], function () {
   return gulp.src(['app/*.js'])
     // Covering files
     .pipe(istanbul({ includeUntested: true }))
@@ -43,7 +47,7 @@ gulp.task('test', ['pretest'], function() {
     .pipe(istanbul.writeReports())
     // Enforce a coverage of at least 90%
     .pipe(istanbul.enforceThresholds({ thresholds: { global: buildOnceMode ? codeCoverageThreshold : 0 }}))
-    
+
 });
 
 gulp.task('coveralls', ['test'], function () {
