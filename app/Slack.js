@@ -99,7 +99,7 @@ var self = module.exports = {
             return channels[i].id;
           }
         }
-        return -1;
+        return null;
     });
   },
   getUsers: function() {
