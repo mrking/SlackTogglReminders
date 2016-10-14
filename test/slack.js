@@ -12,6 +12,7 @@ describe("A slack channel", function() {
   this.timeout(10000);
   it("should have an ID", function() {
    return slackAPI.getChannelID('bot-testing-channel').then(function(ID) {
+     console.log('Our channel ID got' + ID);
      expect(ID).to.exist;
    });
   });

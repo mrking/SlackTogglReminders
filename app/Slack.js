@@ -92,16 +92,14 @@ var self = module.exports = {
     });
   },
   getChannelID: function(channel_name) {
-    return new Promise(function(resolve, reject) {
-      self.getChannels().then(function(channels) {
+    return self.getChannels().then(function(channels) {
         for(var i = 0; i < channels.length; i++) {
           if(channels[i].name == channel_name){
-            resolve(channels[i].id);
-            return;
+            console.log('found channel id' + channels[i].id);
+            return channels[i].id;
           }
         }
-        reject('no channel found');
-      });
+        return -1;
     });
   },
   getUsers: function() {
