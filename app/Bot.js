@@ -11,21 +11,29 @@ var USER_MIN_HOURS = process.env.USER_MIN_HOURS;
 var USER_MIN_HOURS_CHECK_FREQUENCY = process.env.USER_MIN_HOURS_CHECK_FREQUENCY;  //in milliseconds
 var USER_MIN_HOURS_IN_DAYS = process.env.USER_MIN_HOURS_IN_DAYS;
 
+// Do not start up the bot if we are running unit testing only
+if(!process.env.SLACK_TOGGLE_BOT_TEST) {
+  // do something with the rtm.start payload
+  bot.started(function(payload) {
+      console.log('bot starting, setting RunUserHoursCheck on interval %d', USER_MIN_HOURS_CHECK_FREQUENCY);
+      slackAPI.getBotName().then(function(name){
+        console.log('connected to slack and my name is %s', name);
+      });
+      setInterval(RunUserHoursCheck, USER_MIN_HOURS_CHECK_FREQUENCY);
+  });
 
-// do something with the rtm.start payload
-bot.started(function(payload) {
-    console.log('bot starting, setting RunUserHoursCheck on interval %d', USER_MIN_HOURS_CHECK_FREQUENCY);
-    slackAPI.getBotName().then(function(name){
-      console.log('connected to slack and my name is %s', name);
-    });
-    setInterval(RunUserHoursCheck, USER_MIN_HOURS_CHECK_FREQUENCY);
-});
+  bot.message(parseMessages);
 
+  bot.listen({
+      token: SLACK_TOKEN
+  });
+}
 
-bot.message(function(message) {
-  slackAPI.getBotID().then(function(name){
-    if(message.text.indexOf('@' + name) != -1) {
-      var message_split = message.text.split(' ');
+function parseMessages(message) {
+  // message.text
+  bot.isMessageAddressedToMe(function(isForMe) {
+    if(isForMe) {
+     var message_split = message.text.split(' ');
       switch(message_split[1]) {  //why [1], not [0], index 1?
         case 'report':
           if(message_split.length > 2) {
@@ -48,13 +56,23 @@ bot.message(function(message) {
           slackAPI.postMessageToChannel('Unknown Command: say "help" for commands', message.channel);
       }
     }
-  });
-});
 
-// start listening to the slack team associated to the token
-bot.listen({
-    token: SLACK_TOKEN
-});
+  });
+}
+
+bot.isMessageAddressedToMe = function (message) {
+  return Promise.all([slackAPI.getBotID(), slackAPI.getBotName()]).then(function (values){
+      var regex = new RegExp('@.?' + values[0] + '.?', 'g');
+      var regex2 = new RegExp('@.?' + values[1] + '.?', 'g');
+
+      if(regex.test(message) || regex2.test(message)) {
+        return true;
+      }
+      return false;
+  });
+};
+
+
 
 function GetTimeReportForUser(email) {
   return new Promise(function(resolve, reject) {
@@ -93,3 +111,5 @@ function RunUserHoursCheck(user) {
               slackAPI.postMessageToChannel('Unable to get users in toggl ' + member.id);
           });
     }
+
+module.exports = bot;

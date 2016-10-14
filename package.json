@@ -19,7 +19,7 @@
 
   },
   "scripts": {
-    "start": "node ./app/slackStarter.js",
+    "start": "node ./app/Bot.js",
     "test": "gulp pretest test coveralls lint"
   },
   "repository": {
