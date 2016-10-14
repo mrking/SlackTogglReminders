@@ -8,6 +8,15 @@ var DEBUG_MESSAGE = "ZYXWVUTSRQPONMLKJIHGFEDCBA";
 // closer to being integration tests,
 // but achieve the same purpose.
 
+describe("A slack channel", function() {
+  this.timeout(10000);
+  it("should have an ID", function() {
+   return slackAPI.getChannelID('bot-testing-channel').then(function(ID) {
+     expect(ID).to.exist;
+   });
+  });
+});
+
 describe("Our slack API test account", function() {
   this.timeout(10000);
   describe("user", function() {
