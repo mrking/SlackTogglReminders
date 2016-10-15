@@ -15,6 +15,7 @@ You will need the following environment variables for this bot to run.
 SLACK_TOKEN= 
 SLACK_CHANNEL_NAME=  
 SLACK_NOTIFICATION_LIMIT_PERIOD= 
+SLACK_TOGGLE_BOT_TEST=false
 TOGGL_API_TOKEN=
 TOGGL_WORKSPACE_NAME= 
 USER_MIN_HOURS= 
@@ -30,6 +31,9 @@ Default slack channel for which the bot will post notifications (e.g. time-manag
 
 `SLACK_NOTIFICATION_LIMIT_PERIOD`
 How often the bot can send a notification for a particular user in hours (e.g. 24)
+
+`SLACK_TOGGLE_BOT_TEST`=false
+set to false unless executing unit tests
 
 `TOGGL_API_TOKEN`
 Toggl API Token Provided Here: https://www.toggl.com/app/profile
