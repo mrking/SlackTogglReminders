@@ -76,9 +76,9 @@ TimeReport.prototype = {
   },
   toString: function() {
     if(this.meetExpectedHours()) {
-      return this.getUser().name + " has recorded " + this.getHoursRecorded().toPrecision(3) + " work hours for the week";
+      return this.getUser().real_name + " has recorded " + this.getHoursRecorded().toPrecision(3) + " work hours for the week";
     } else {
-      return this.getUser().name + " has recorded " + this.getHoursRecorded().toPrecision(3) + " work hours for the week, and are behind the minimum hours by " + (USER_MIN_HOURS - this.getHoursRecorded()).toPrecision(3) + " hours of the total " + USER_MIN_HOURS;
+      return this.getUser().real_name + " has recorded " + this.getHoursRecorded().toPrecision(3) + " work hours for the week, and are behind the minimum hours by " + (USER_MIN_HOURS - this.getHoursRecorded()).toPrecision(3) + " hours of the total " + USER_MIN_HOURS;
     }
   }
 };
