@@ -6,7 +6,6 @@ describe("TimeReport", function() {
     this.timeout(15000);
 
     it("with missing parameters should throw an error", function() {
-      console.log(TimeReport.prototype.MISSING_PARAMETERS);
       expect(new TimeReport()).to.throw(TimeReport.prototype.MISSING_PARAMETERS);
       expect(new TimeReport({})).to.throw(TimeReport.prototype.MISSING_PARAMETERS);
       expect(new TimeReport({},1)).to.throw(TimeReport.prototype.MISSING_PARAMETERS);
