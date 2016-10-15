@@ -68,29 +68,30 @@ describe("Our slack API test account", function() {
   });
   describe("posting a message", function() {
     it("should be able to post a message with or without channel details and delete the messages after", function() {
-      // var count = slackAPI.searchMessages(DEBUG_MESSAGE);
-      // console.log("TESTING SEARCH MESSAGES: COUNT OF " + count);
       return slackAPI.postMessageToChannel(DEBUG_MESSAGE).then(function(result) {
         // expect(slackAPI.searchMessages(DEBUG_MESSAGE)).to.equal(count+1);
         expect(result).to.equal(process.env.SLACK_CHANNEL_NAME);
-        var deleteResponse = slackAPI.deleteChannelMessages(process.env.SLACK_CHANNEL_NAME, DEBUG_MESSAGE);
+        return slackAPI.deleteChannelMessages(process.env.SLACK_CHANNEL_NAME, DEBUG_MESSAGE);
+      }).then(function(deleteResponse) {
+        console.log("END OF deleteChannelMessages " + typeof(deleteResponse));
+        console.log(deleteResponse);
         expect(deleteResponse).to.be.true;
         //TODO FIX This Test now that it returns the channel name it posted too
       });
     });
     it("should be able to send a message to a user and delete old debug messages", function() {
-      return slackAPI.getUser('new.overlord@gmail.com').then(function(user) {
-        slackAPI.postMessageToUser(DEBUG_MESSAGE, user.id).then(function(result) {
-          console.log("slackbot id is " + user.id);
-          //AFTER TESTING CLEAR OFF MESSAGES WITH DEBUG_MESSAGE
-          var deleteResponse = slackAPI.deleteDirectMessages(DEBUG_MESSAGE);
-          expect(deleteResponse).to.exist;
-          expect(deleteResponse.successful_count).to.be.at.least(0);
-          expect(result).to.be.true;
+      return slackAPI.getUser('new.overlord@gmail.com')
+      .then(function(user) {
+        return slackAPI.postMessageToUser(DEBUG_MESSAGE, user.id)
+      }).then(function(result) {
+        //AFTER TESTING CLEAR OFF MESSAGES WITH DEBUG_MESSAGE
+        var deleteResponse = slackAPI.deleteDirectMessages(DEBUG_MESSAGE);
+        expect(deleteResponse).to.exist;
+        expect(deleteResponse.successful_count).to.be.at.least(0);
+        expect(result).to.be.true;
 
-        }, function(err) {
-          expect(err).to.exist;
-        });
+      }, function(err) {
+        expect(err).to.exist;
       });
     });
     it("must throw an error when posting to a non-existent or inaccessible channel", function() {

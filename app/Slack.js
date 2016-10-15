@@ -282,11 +282,7 @@ var self = module.exports = {
   },
   deleteChannelMessages: function(channel, query) { //SHOULD HAVE OPTIONAL ARGS - LIST OF USERS
     var deleteEverything = !(query);
-
     return self.getChannelID(channel).then(function(channel_id) {
-
-      console.log("channel _" + channel + " ID is " + channel_id);
-      console.log(channel_id);
 
       return new Promise(function(resolve, reject) {
         slack.channels.history({token: SLACK_TOKEN, channel: channel_id, count: 10000}, function(err, data) {
@@ -304,6 +300,7 @@ var self = module.exports = {
               });
             }
           });
+          resolve(result);
         });
       });
     });
