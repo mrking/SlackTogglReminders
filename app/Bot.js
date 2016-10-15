@@ -38,7 +38,7 @@ controller.hears(['hello', 'help'],['direct_message','direct_mention','mention']
 controller.hears(['report <mailto:(.*)'],['direct_message','direct_mention','mention'],
   function(bot,message) {
     console.log('Looking up hours for %s', message.match[1].substring(0,  message.match[1].indexOf('|')));
-    GetTimeReportForUser( message.match[1].substring(0,  message.match[1].indexOf('|'))).then(function(result) {
+    TimeReport.generateTimeReport( message.match[1].substring(0,  message.match[1].indexOf('|'))).then(function(result) {
       bot.reply(message, result.toString());
     }).catch(function(err) {
       bot.reply(message, "Unable to get hours for " + message.match[1].substring(0,  message.match[1].indexOf('|')));
@@ -49,7 +49,7 @@ controller.hears(['report <mailto:(.*)'],['direct_message','direct_mention','men
 function RunUserHoursCheck(user) {
       slackAPI.getRealUsers().then(function(members) {
          members.forEach(function(member) {
-              TimeReport.GetTimeReport(member.profile.email).then(function(timeReport) {
+              TimeReport.generateTimeReport(member.profile.email).then(function(timeReport) {
                 console.log(timeReport.meetExpectedHours());
                 if(!timeReport.meetExpectedHours()) {
                   slackAPI.sendNotification(member.id, 'USER_MIN_HOURS', timeReport.toString(), true);
