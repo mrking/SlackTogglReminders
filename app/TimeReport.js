@@ -66,8 +66,6 @@ TimeReport.prototype = {
     meetExpectedHours: function() {
         var days = Math.abs((this.getEndTime().getTime() - this.getStartTime().getTime())/(24*60*60*1000));
         var ratio = days / USER_MIN_HOURS_IN_DAYS;
-        console.log(this.getHoursRecorded());
-        console.log(USER_MIN_HOURS*ratio);
         return this.getHoursRecorded() >= USER_MIN_HOURS*ratio;
     },
 
@@ -91,13 +89,14 @@ TimeReport.prototype = {
      */
 TimeReport.getDefaultDates = function(start) {
       start = start || new Date();
-      var end = new Date(start).setDate(start.getDate() - USER_MIN_HOURS_IN_DAYS);
+      var end = new Date(start);
+      end.setDate(start.getDate() - USER_MIN_HOURS_IN_DAYS);
       return [start, end];
     };
 
 TimeReport.generateTimeReport = function(email, start, end) {
     if(!start || !end) {
-      var defaults = getDefaultDates(start);
+      var defaults = TimeReport.getDefaultDates(start);
       start = start || defaults[0];
       end = end || defaults[1];
     }

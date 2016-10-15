@@ -4,6 +4,8 @@ var TimeReport = require("../app/TimeReport.js");
 
 var USER_MIN_HOURS = process.env.USER_MIN_HOURS;
 var USER_MIN_HOURS_IN_DAYS = process.env.USER_MIN_HOURS_IN_DAYS;
+var TEST_EMAIL_ACCOUNT = 'mikerobertking@gmail.com';
+var TEST_EMAIL_ACCOUNT_REAL_NAME = 'Michael King';
 
 describe("TimeReport", function() {
     this.timeout(15000);
@@ -56,6 +58,16 @@ describe("TimeReport", function() {
       expect(new TimeReport({}, hoursPerDay * 2, d1, d2).meetExpectedHours()).to.be.true;
       expect(new TimeReport({}, hoursPerDay * 2.001, d1, d2).meetExpectedHours()).to.be.true;
       expect(new TimeReport({}, hoursPerDay * 200, d1, d2).meetExpectedHours()).to.be.true;
-
     });
+
+    it('should produce a report with 0 hours for Michael before his birth', function(){
+      return TimeReport.generateTimeReport(TEST_EMAIL_ACCOUNT, new Date(1980, 01, 01)).then(function(report) {
+          expect(report.getEndTime() - report.getStartTime()).to.equal(USER_MIN_HOURS_IN_DAYS * 24 * 60 * 60 * 1000);
+          expect(report.getHoursRecorded()).to.equal(0);
+          expect(report.meetExpectedHours()).to.be.false;
+          expect(report.getUser().real_name).to.equal(TEST_EMAIL_ACCOUNT_REAL_NAME);
+      });
+    });
+
+
 });
