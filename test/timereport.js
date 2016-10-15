@@ -69,8 +69,18 @@ describe("TimeReport", function() {
           expect(report.getHoursRecorded()).to.equal(0);
           expect(report.meetExpectedHours()).to.be.false;
           expect(report.getUser().real_name).to.equal(TEST_EMAIL_ACCOUNT_REAL_NAME);
+          expect(report.toString()).to.exist;
       });
     });
+
+        it('should produce a report sufficient hours for Michael', function(){
+          return TimeReport.generateTimeReport(TEST_EMAIL_ACCOUNT, new Date(2016, 09, 01)).then(function(report) {
+              expect(report.getEndTime() - report.getStartTime()).to.equal(USER_MIN_HOURS_IN_DAYS * 24 * 60 * 60 * 1000);
+              expect(report.meetExpectedHours()).to.be.true;
+              expect(report.getUser().real_name).to.equal(TEST_EMAIL_ACCOUNT_REAL_NAME);
+              expect(report.toString()).to.exist;
+          });
+        });
 
 
 });
