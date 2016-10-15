@@ -4,6 +4,7 @@
   "description": "Slack bot that handles various reminders and reporting for Toggl",
   "main": "index.js",
   "dependencies": {
+    "botkit": "^0.4.0",
     "slack": "^7.7.3",
     "toggl-api": "^1.0.0"
   },
@@ -16,10 +17,9 @@
     "jshint": "^2.9.2",
     "chai": "^3.5.0",
     "gulp-mocha": "^3.0.1"
-
   },
   "scripts": {
-    "start": "node ./app/slackStarter.js",
+    "start": "node ./app/Bot.js",
     "test": "gulp pretest test coveralls lint"
   },
   "repository": {
