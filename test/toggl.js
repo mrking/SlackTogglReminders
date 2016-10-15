@@ -9,6 +9,9 @@ var togglAPI = require("../app/Toggl.js");
 describe("Our toggl API test account", function() {
     this.timeout(15000);
     describe("users", function() {
+        before(function() {
+          togglAPI.clearCachedUsers();
+        });
         it("shouldn't be cached yet on init", function() {
             assert(Object.keys(togglAPI.getCachedUsers()).length === 0);
         });

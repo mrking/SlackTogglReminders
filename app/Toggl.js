@@ -37,6 +37,9 @@ var self = module.exports = {
   getCachedUsers: function() {
     return UsersInToggl;
   },
+  clearCachedUsers: function() {
+    UsersInToggl = {};
+  },
   // returns a promise for the user object with a parameter of an email address string
   getUser: function(email) {
       if(UsersInToggl[email]) {
