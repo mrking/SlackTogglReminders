@@ -91,7 +91,7 @@ var self = module.exports = {
       self.getUsers().then(function(users) {
         var new_users = [];
         for (var i = 0; i < users.length; i++) {
-          if(!users[i].is_bot) {
+          if(!users[i].is_bot && !users[i].deleted) {
             new_users.push(users[i]);
           }
         }

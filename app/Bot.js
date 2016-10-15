@@ -16,11 +16,8 @@ var controller = bot.slackbot({
   debug: false
 });
 
-
 // Do not start up the bot if we are running unit testing only
 if(!process.env.SLACK_TOGGLE_BOT_TEST) {
-  // do something with the rtm.start payload
-  // connect the bot to a stream of messages
   controller.spawn({
     token: SLACK_TOKEN,
   }).startRTM();
@@ -30,7 +27,7 @@ if(!process.env.SLACK_TOGGLE_BOT_TEST) {
 }
 
 var help = "You may use the following commands: \n" +
-           "Report [Email-Address] (Optional:Timeframe in Days) (Optional:Offset in Hours) \n";
+           "report [Email-Address]\n";
 
 controller.hears(['hello', 'help'],['direct_message','direct_mention','mention'],
   function(bot,message) {
@@ -38,87 +35,65 @@ controller.hears(['hello', 'help'],['direct_message','direct_mention','mention']
   }
 );
 
-function parseMessages(message) {
-  // message.text
-  bot.isMessageAddressedToMe(function(isForMe) {
-    if(isForMe) {
-     var message_split = message.text.split(' ');
-      switch(message_split[1]) {  //why [1], not [0], index 1?
-        case 'report':
-          if(message_split.length > 2) {
-            //var reportUser = slackAPI.getUser(message_split[2]).then(function(reportUser) {
-              GetTimeReportForUser(message_split[2]).then(function(text) {
-                  slackAPI.postMessageToChannel(text, message.channel);
-              });
-            /*}, function(err) {
-              slackAPI.postMessageToChannel('To get a time report on a user type "report [EMAIL]" (e.g. "report user@email.com")', message.channel);
-            });*/
-          }
-          else {
-            slackAPI.postMessageToChannel('To get a time report on a user type "report [EMAIL]" (e.g. "report user@email.com")', message.channel);
-          }
-          break;
-        case 'help':
-          slackAPI.postMessageToChannel('The following commands are available:\n* report [EMAIL]; (time report on a user)', message.channel);
-          break;
-        default:
-          slackAPI.postMessageToChannel('Unknown Command: say "help" for commands', message.channel);
-      }
-    }
-
-  });
-}
-
-bot.isMessageAddressedToMe = function (message) {
-  return Promise.all([slackAPI.getBotID(), slackAPI.getBotName()]).then(function (values){
-      var regex = new RegExp('@.?' + values[0] + '.?', 'g');
-      var regex2 = new RegExp('@.?' + values[1] + '.?', 'g');
-
-      if(regex.test(message) || regex2.test(message)) {
-        return true;
-      }
-      return false;
-  });
-};
-
-
+// comes in as <mailto:email|email>
+controller.hears(['report <mailto:(.*)'],['direct_message','direct_mention','mention'],
+  function(bot,message) {
+    console.log('Looking up hours for %s', message.match[1].substring(0,  message.match[1].indexOf('|')));
+    GetTimeReportForUser( message.match[1].substring(0,  message.match[1].indexOf('|'))).then(function(result) {
+      bot.reply(message, result.toString());
+    }).catch(function(err) {
+      bot.reply(message, "Unable to get hours for " + message.match[1].substring(0,  message.match[1].indexOf('|')));
+    });
+  }
+);
 
 function GetTimeReportForUser(email) {
-  return new Promise(function(resolve, reject) {
-    var startPeriod = new Date();
-    startPeriod.setDate(startPeriod.getDate() - USER_MIN_HOURS_IN_DAYS);
-    Promise.all(togglAPI.getTimeSpent(startPeriod, new Date(), email), slackAPI.getUser(email)).then(function(values) {
-      console.log('test');
+  var startPeriod = new Date();
+  startPeriod.setDate(startPeriod.getDate() - USER_MIN_HOURS_IN_DAYS);
+
+  return Promise.all([togglAPI.getTimeSpent(startPeriod, new Date(), email), slackAPI.getUser(email)])
+  .then(function(values) {
       var time = values[0];
       var user = values[1];
-        var text = "";
-        if (time < USER_MIN_HOURS) {
-            text = user.real_name + " has recorded " + time.toPrecision(3) + " work hours for the week, and are behind the minimum hours by " + (USER_MIN_HOURS - time).toPrecision(3) + " hours of the total " + USER_MIN_HOURS;
-        } else {
-            text = user.real_name + " has recorded " + time.toPrecision(3) + " work hours for the week";
-        }
-        resolve(text);
-      }, function(err) {
-        reject(err);
-      }
-    );
+      return new TimeReport(user, time, startPeriod, new Date());
   });
 }
 
-function RunUserHoursCheck(user) {
-    console.log('Running User Hours Check');
+function TimeReport(user, time, start, end) {
+  this._user = user;
+  this._hoursRecorded = time;
+}
 
+TimeReport.prototype = {
+  getUser: function() {
+    return this._user;
+  },
+  getHoursRecorded: function() {
+    return this._hoursRecorded;
+  },
+  meetExpectedHours: function() {
+    return this.getHoursRecorded() >= USER_MIN_HOURS;
+  },
+  toString: function() {
+    if(this.meetExpectedHours()) {
+      return this.getUser().name + " has recorded " + this.getHoursRecorded().toPrecision(3) + " work hours for the week";
+    } else {
+      return this.getUser().name + " has recorded " + this.getHoursRecorded().toPrecision(3) + " work hours for the week, and are behind the minimum hours by " + (USER_MIN_HOURS - this.getHoursRecorded()).toPrecision(3) + " hours of the total " + USER_MIN_HOURS;
+    }
+  }
+};
+
+function RunUserHoursCheck(user) {
       slackAPI.getRealUsers().then(function(members) {
          members.forEach(function(member) {
-              GetTimeReportForUser(member).then(function(text) {
-                  slackAPI.sendNotification(member.id, 'USER_MIN_HOURS', text, true);
+              GetTimeReportForUser(member.profile.email).then(function(timeReport) {
+                console.log(timeReport.meetExpectedHours());
+                if(!timeReport.meetExpectedHours()) {
+                  slackAPI.sendNotification(member.id, 'USER_MIN_HOURS', timeReport.toString(), true);
+                }
               }, function(err) {
-                  slackAPI.postMessageToChannel('Unable to find hours  for ' + member.real_name);
+                  slackAPI.postMessageToChannel('Unable to find hours for ' + member.real_name);
               });
             });
-          }, function(err) {
-              slackAPI.postMessageToChannel('Unable to get users in toggl ' + member.id);
           });
-    }
-
-module.exports = bot;
+}
