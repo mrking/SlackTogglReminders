@@ -60,13 +60,21 @@ TimeReport.prototype = {
     },
 
     /**
+     * Gets the required nubmer of hours for the range
+     * @return {int} int representing the required number oh hours for the date range.
+     */
+    getRequiredHours: function() {
+          var days = Math.abs((this.getEndTime().getTime() - this.getStartTime().getTime())/(24*60*60*1000));
+          var ratio = days / USER_MIN_HOURS_IN_DAYS;
+          return USER_MIN_HOURS*ratio;
+    },
+
+    /**
      * Determines if the user has met the minimum number of hours
      * @return {bool} a boolean representing if the user has meet expected hours
      */
     meetExpectedHours: function() {
-        var days = Math.abs((this.getEndTime().getTime() - this.getStartTime().getTime())/(24*60*60*1000));
-        var ratio = days / USER_MIN_HOURS_IN_DAYS;
-        return this.getHoursRecorded() >= USER_MIN_HOURS*ratio;
+        return this.getHoursRecorded() >= this.getRequiredHours();
     },
 
     /**
@@ -75,9 +83,9 @@ TimeReport.prototype = {
      */
     toString: function() {
         if (this.meetExpectedHours()) {
-            return this.getUser().real_name + " has recorded " + this.getHoursRecorded().toPrecision(3) + " work hours for the week";
+            return this.getUser().real_name + " has recorded " + this.getHoursRecorded().toPrecision(3) + " work hours for the date range from " + this.getStartTime().toISOString() + " to " + this.getEndTime().toISOString();
         } else {
-            return this.getUser().real_name + " has recorded " + this.getHoursRecorded().toPrecision(3) + " work hours for the week, and are behind the minimum hours by " + (USER_MIN_HOURS - this.getHoursRecorded()).toPrecision(3) + " hours of the total " + USER_MIN_HOURS;
+            return this.getUser().real_name + " has recorded " + this.getHoursRecorded().toPrecision(3) + " work hours for the date range from " + this.getStartTime().toISOString() + " to " + this.getEndTime().toISOString()+ ", and are behind the minimum hours by " + (this.getRequiredHours() - this.getHoursRecorded()).toPrecision(3) + " hours of the total " + this.getRequiredHours();
         }
     },
 };
