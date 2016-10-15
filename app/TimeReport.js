@@ -28,12 +28,21 @@ function TimeReport(user, time, start, end) {
 TimeReport.prototype = {
   MISSING_PARAMETERS: new Error("MISSING_PARAMETERS"),
   EXPECTED_DATE_TYPE: new Error("EXPECTED_DATE_TYPE"),
+  /**
+   * gets the start date of the report
+   * @return {date} returns a date object containing the start date
+   */
   getStartTime: function() {
     return this._start;
   },
+  /**
+   * gets the end date of the report
+   * @return {date} returns a date object containing the end date
+   */
   getEndTime: function() {
     return this._end;
   },
+
   /**
     * Returns the slack user object of the person being report on
     * @return {Slack User} Returns the slack user object of the person being reported on
@@ -41,6 +50,7 @@ TimeReport.prototype = {
     getUser: function() {
         return this._user;
     },
+
     /**
      * Gets the number of recorded hours
      * @return {int} an integer reporting the number of hours
@@ -48,6 +58,7 @@ TimeReport.prototype = {
     getHoursRecorded: function() {
         return this._hoursRecorded;
     },
+
     /**
      * Determines if the user has met the minimum number of hours
      * @return {bool} a boolean representing if the user has meet expected hours
@@ -55,8 +66,11 @@ TimeReport.prototype = {
     meetExpectedHours: function() {
         var days = Math.abs((this.getEndTime().getTime() - this.getStartTime().getTime())/(24*60*60*1000));
         var ratio = days / USER_MIN_HOURS_IN_DAYS;
+        console.log(this.getHoursRecorded());
+        console.log(USER_MIN_HOURS*ratio);
         return this.getHoursRecorded() >= USER_MIN_HOURS*ratio;
     },
+
     /**
      * a string representing the report
      * @return {[type]} [description]
@@ -68,12 +82,18 @@ TimeReport.prototype = {
             return this.getUser().real_name + " has recorded " + this.getHoursRecorded().toPrecision(3) + " work hours for the week, and are behind the minimum hours by " + (USER_MIN_HOURS - this.getHoursRecorded()).toPrecision(3) + " hours of the total " + USER_MIN_HOURS;
         }
     },
-    getDefaultDates: function(start) {
+};
+
+    /**
+     * a helper function that returns default date ranges if none are provided based on USER_MIN_HOURS_IN_DAYS environment variable
+     * @param  {Date} [start=new Date()] optional date parameter if you want to get corresponding default date end range
+     * @return {[Date]} two item array containing Dates, [0] = start, [1] = end
+     */
+TimeReport.getDefaultDates = function(start) {
       start = start || new Date();
       var end = new Date(start).setDate(start.getDate() - USER_MIN_HOURS_IN_DAYS);
       return [start, end];
-    }
-};
+    };
 
 TimeReport.generateTimeReport = function(email, start, end) {
     if(!start || !end) {
