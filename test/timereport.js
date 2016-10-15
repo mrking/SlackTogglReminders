@@ -6,17 +6,17 @@ describe("TimeReport", function() {
     this.timeout(15000);
 
     it("with missing parameters should throw an error", function() {
-      expect(new TimeReport()).to.throw(TimeReport.prototype.MISSING_PARAMETERS);
-      expect(new TimeReport({})).to.throw(TimeReport.prototype.MISSING_PARAMETERS);
-      expect(new TimeReport({},1)).to.throw(TimeReport.prototype.MISSING_PARAMETERS);
-      expect(new TimeReport({},1,new Date())).to.throw(TimeReport.prototype.MISSING_PARAMETERS);
-      expect(new TimeReport({}, 1, new Date(), new Date())).to.not.throw(TimeReport.prototype.MISSING_PARAMETERS);
+      expect(function() { new TimeReport();}).to.throw(TimeReport.prototype.MISSING_PARAMETERS);
+      expect(function() { new TimeReport({});}).to.throw(TimeReport.prototype.MISSING_PARAMETERS);
+      expect(function() { new TimeReport({}, 1);}).to.throw(TimeReport.prototype.MISSING_PARAMETERS);
+      expect(function() { new TimeReport({}, 1, new Date());}).to.throw(TimeReport.prototype.MISSING_PARAMETERS);
+      expect(function() { new TimeReport({}, 1, new Date(), new Date()); }).to.not.throw(TimeReport.prototype.MISSING_PARAMETERS);
     });
 
     it("with bad parameters should throw an error", function() {
-      expect(new TimeReport({}, 1, "not a date", "not a date")).to.throw(TimeReport.prototype.EXPECTED_DATE_TYPE);
-      expect(new TimeReport({}, 1, new Date(), "not a date")).to.throw(TimeReport.prototype.EXPECTED_DATE_TYPE);
-      expect(new TimeReport({}, 1, "not a date", new Date())).to.throw(TimeReport.prototype.EXPECTED_DATE_TYPE);
+      expect(function() { new TimeReport({}, 1, "not a date", "not a date"); }).to.throw(TimeReport.prototype.EXPECTED_DATE_TYPE);
+      expect(function() { new TimeReport({}, 1, new Date(), "not a date"); }).to.throw(TimeReport.prototype.EXPECTED_DATE_TYPE);
+      expect(function() { new TimeReport({}, 1, "not a date", new Date()); }).to.throw(TimeReport.prototype.EXPECTED_DATE_TYPE);
     });
 
     it("with provided start and end time to get return back same times", function() {
