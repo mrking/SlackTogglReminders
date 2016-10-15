@@ -2,7 +2,7 @@ var togglAPI = require('./Toggl.js');
 var slackAPI = require('./Slack.js');
 
 var USER_MIN_HOURS = process.env.USER_MIN_HOURS;
-var USER_MIN_HOURS_IN_DAYS = process.env.USER_MIN_HOURS_IN_DAYS;
+var USER_MIN_HOURS_IN_DAYS = parseInt(process.env.USER_MIN_HOURS_IN_DAYS);
 
 /**
  * Timereport is a centralized class for reporting on a user's time in submitted in toggl.
@@ -88,12 +88,25 @@ TimeReport.prototype = {
      * @return {[Date]} two item array containing Dates, [0] = start, [1] = end
      */
 TimeReport.getDefaultDates = function(start) {
-      start = start || new Date();
-      var end = new Date(start);
-      end.setDate(start.getDate() - USER_MIN_HOURS_IN_DAYS);
+      var end = new Date();
+      if(!start) {
+        start = new Date(end);
+        start.setDate(start.getDate() - USER_MIN_HOURS_IN_DAYS);
+      } else {
+        end = new Date(start);
+        end.setDate(end.getDate() + USER_MIN_HOURS_IN_DAYS);
+      }
+
       return [start, end];
     };
 
+/**
+ * Generates a time report object for a user
+ * @param  {string} email user's email address registered in toggl
+ * @param  {date} [start=Now-USER_MIN_HOURS_IN_DAYS] start time of the report
+ * @param  {date} [end=Now-USER_MIN_HOURS_IN_DAYS] end time of the report
+ * @return {TimeReport}  a promise for report detailing the users time
+ */
 TimeReport.generateTimeReport = function(email, start, end) {
     if(!start || !end) {
       var defaults = TimeReport.getDefaultDates(start);

@@ -37,14 +37,17 @@ describe("TimeReport", function() {
 
     it("to help generate date ranges based on environment variable", function() {
       var dates = TimeReport.getDefaultDates();
+      expect(dates[1] - dates[0]).to.equal(USER_MIN_HOURS_IN_DAYS * 24 * 60 * 60 * 1000);
+    });
+
+    it("to help generate date ranges based on environment variable and start date", function() {
       var start = new Date(2016,01,01);
-
-      expect(dates[0] - dates[1]).to.equal(USER_MIN_HOURS_IN_DAYS * 24 * 60 * 60 * 1000);
-
       dates = TimeReport.getDefaultDates(start);
-      expect(dates[0] - dates[1]).to.equal(USER_MIN_HOURS_IN_DAYS * 24 * 60 * 60 * 1000);
+      expect(dates[1] - dates[0]).to.equal(USER_MIN_HOURS_IN_DAYS * 24 * 60 * 60 * 1000);
       expect(dates[0]).to.equal(start);
     });
+
+
 
     it("to tell us if user met hour requirements", function() {
       var dates = TimeReport.getDefaultDates();
@@ -60,8 +63,8 @@ describe("TimeReport", function() {
       expect(new TimeReport({}, hoursPerDay * 200, d1, d2).meetExpectedHours()).to.be.true;
     });
 
-    it('should produce a report with 0 hours for Michael before his birth', function(){
-      return TimeReport.generateTimeReport(TEST_EMAIL_ACCOUNT, new Date(1980, 01, 01)).then(function(report) {
+    it('should produce a report with 0 hours for Michael', function(){
+      return TimeReport.generateTimeReport(TEST_EMAIL_ACCOUNT, new Date(2010, 01, 01)).then(function(report) {
           expect(report.getEndTime() - report.getStartTime()).to.equal(USER_MIN_HOURS_IN_DAYS * 24 * 60 * 60 * 1000);
           expect(report.getHoursRecorded()).to.equal(0);
           expect(report.meetExpectedHours()).to.be.false;
