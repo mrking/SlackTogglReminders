@@ -177,7 +177,7 @@ var self = module.exports = {
   },
   searchMessages: function(query) {
     return new Promise(function(resolve, reject) {
-      slack.search.messages({token: ADMIN_SLACK_TOKEN, query: query, count: 10000}, function(err, data) {
+      slack.search.messages({token: ADMIN_SLACK_TOKEN, query: query, count: 1000}, function(err, data) {
         if(err || data.messages.total === 0) {
           console.log('search query is unsuccessful');
           reject(err);
@@ -247,45 +247,45 @@ var self = module.exports = {
     var userMatchSearch = (matchUsers && matchUsers.length > 0);
 
     return self.searchMessages(query).then(function(messages) {
-      if(err) {
-        console.log('search query is unsuccessful');
-        return err;
-      }
+      return new Promise(function(resolve, reject) {
 
-      console.log('message query for ' + query + ' is successful');
-      var affixes = ['previous', 'previous_2', 'next', 'next_2'];
-      var result = {
-        successful_count: 0,
-        fail_count: 0,
-        ok: false
-      };
-      messages.matches.forEach(function(message) {
-        if (message.text.toLowerCase() == query.toLowerCase() && (userMatchSearch && matchUsers.includes(message[text].username)) || !userMatch) {
-          slack.chat.delete({token: SLACK_TOKEN, ts: message.ts, channel: message.channel.id}, function(err, data) {
-            if (err) {
-              result.fail_count++;
-            } else {
-              result.successful_count++;
+        console.log('message query for ' + query + ' is successful');
+        var affixes = ['previous', 'previous_2', 'next', 'next_2'];
+        var result = {
+          successful_count: 0,
+          fail_count: 0,
+          ok: false
+        };
+        messages.matches.forEach(function(message) {
+          if (message.text.toLowerCase() == query.toLowerCase() && (userMatchSearch && matchUsers.includes(message[text].username)) || !userMatch) {
+            slack.chat.delete({token: SLACK_TOKEN, ts: message.ts, channel: message.channel.id}, function(err, data) {
+              if (err) {
+                result.fail_count++;
+              } else {
+                result.successful_count++;
+              }
+            });
+          }
+          //code below loops through the messages chained to the parent timestamp and deletes them if they match the query
+          affixes.forEach(function(text) {
+            if (message[text] && message.type=="im" && message[text].text.toLowerCase() == query.toLowerCase()){
+              if ((userMatchSearch && matchUsers.includes(message[text].username)) || !userMatch) {
+                slack.chat.delete({token: SLACK_TOKEN, ts: message[text].ts, channel: message.channel.id}, function(err, data) {
+                  if (err) {
+                    result.fail_count++;
+                  } else {
+                    result.successful_count++;
+                  }
+                });
+              }
             }
           });
-        }
-        //code below loops through the messages chained to the parent timestamp and deletes them if they match the query
-        affixes.forEach(function(text) {
-          if (message[text] && message.type=="im" && message[text].text.toLowerCase() == query.toLowerCase()){
-            if ((userMatchSearch && matchUsers.includes(message[text].username)) || !userMatch) {
-              slack.chat.delete({token: SLACK_TOKEN, ts: message[text].ts, channel: message.channel.id}, function(err, data) {
-                if (err) {
-                  result.fail_count++;
-                } else {
-                  result.successful_count++;
-                }
-              });
-            }
-          }
         });
+        result.ok = result.successful_count > 0;
+        resolve(result);
+        return;
       });
-      result.ok = result.successful_count > 0;
-      return result;
+
     });
   },
   deleteChannelMessages: function(channel, query) { //SHOULD HAVE OPTIONAL ARGS - LIST OF USERS
