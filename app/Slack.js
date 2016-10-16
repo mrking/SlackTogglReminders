@@ -93,13 +93,13 @@ var self = module.exports = {
   },
   getChannelID: function(channel_name) {
     return self.getChannels().then(function(channels) {
-        for(var i = 0; i < channels.length; i++) {
-          if(channels[i].name == channel_name){
-            console.log('found channel id' + channels[i].id);
-            return channels[i].id;
-          }
+      for(var i = 0; i < channels.length; i++) {
+        if(channels[i].name == channel_name){
+          console.log('found channel id' + channels[i].id);
+          return channels[i].id;
         }
-        return null;
+      }
+      return null;
     });
   },
   getUsers: function() {
@@ -186,6 +186,51 @@ var self = module.exports = {
       });
     });
   },
+  searchChannelMessages: function(query, channel, latest) {
+    return self.getChannelID(channel).then(function(channel_id) {
+      if (!latest) {
+        latest = new Date().getTime();
+      }
+
+      return new Promise(function(resolve, reject) {
+        slack.channels.history({token: SLACK_TOKEN, channel: channel_id, count: 1000, inclusive: 1, latest: latest}, function(err, data) {
+          var matches = [],
+            last_ts = 0;
+
+          if (err) {
+            reject(err);
+          }
+
+          if (query) {
+            data.messages.forEach(function(message) {
+              if (message.text.toLowerCase() == query.toLowerCase()) {
+                matches.push(message);
+              }
+              last_ts = message.ts;
+            });
+          } else {
+            matches = data.messages;
+            last_ts = data.messages[data.messages.length - 1].ts;
+          }
+
+          if (data.has_more) {
+            //recursion to go to the start of channel history;
+            self.searchChannelMessages(query, channel, last_ts).then(function(m) {
+              matches = matches.concat(m);
+            });
+          }
+          resolve(matches);
+        });
+      });
+    });
+  },
+  countChannelMessages: function(query, channel) {
+    return new Promise(function(resolve) {
+      self.searchChannelMessages(query, channel).then(function(messages) {
+        resolve(messages.length);
+      });
+    });
+  },
   deleteSlackMessage: function(channel_id, timestamp) {
     return new Promise(function(resolve, reject) {
       slack.chat.delete({token: SLACK_TOKEN, ts: message[text].ts, channel: message.channel.id}, function(err, data) {
@@ -197,12 +242,10 @@ var self = module.exports = {
       });
     });
   },
-  deleteMessages: function(query, type) {
-    var matchUsers = Array.prototype.slice.call(arguments, 3);
+  deleteDirectMessages: function(query) {
+    var matchUsers = Array.prototype.slice.call(arguments, 1);
     var userMatchSearch = (matchUsers && matchUsers.length > 0);
 
-    console.log("matchUsers: ");
-    console.log(matchUsers);
     return self.searchMessages(query).then(function(messages) {
       if(err) {
         console.log('search query is unsuccessful');
@@ -210,50 +253,35 @@ var self = module.exports = {
       }
 
       console.log('message query for ' + query + ' is successful');
-      var affixes = ['previous', 'previous_2', 'text', 'next', 'next_2'];
+      var affixes = ['previous', 'previous_2', 'next', 'next_2'];
       var result = {
         successful_count: 0,
         fail_count: 0,
         ok: false
       };
       messages.matches.forEach(function(message) {
-        //code below loops through the messages chained to the parent timestamp and deletes them if they match the query
-        affixes.forEach(function(text) {    //TODO FIX THIS NESTED IF STRUCTURE!!!!!
-            // if (text == "text" && message.text.toLowerCase() == query.toLowerCase()) {
-            //   if (userMatchSearch && matchUsers.includes(message.username)) {
-            //     slack.chat.delete({token: SLACK_TOKEN, ts: message.ts, channel: message.channel.id}, function(err, data) {
-            //       if (err)
-            //       result.fail_count++;
-            //       else
-            //       result.successful_count++;
-            //     });
-            //   } else {
-            //     slack.chat.delete({token: SLACK_TOKEN, ts: message.ts, channel: message.channel.id}, function(err, data) {
-            //       if (err)
-            //       result.fail_count++;
-            //       else
-            //       result.successful_count++;
-            //     });
-            //   }
-            // }
-            if (message[text] && message.type==type && message[text].text.toLowerCase() == query.toLowerCase()){
-
-              if (userMatchSearch && matchUsers.includes(message[text].username)) {
-                slack.chat.delete({token: SLACK_TOKEN, ts: message[text].ts, channel: message.channel.id}, function(err, data) {
-                  if (err)
-                  result.fail_count++;
-                  else
-                  result.successful_count++;
-                });
-              } else {
-                slack.chat.delete({token: SLACK_TOKEN, ts: message[text].ts, channel: message.channel.id}, function(err, data) {
-                  if (err)
-                  result.fail_count++;
-                  else
-                  result.successful_count++;
-                });
-              }
+        if (message.text.toLowerCase() == query.toLowerCase() && (userMatchSearch && matchUsers.includes(message[text].username)) || !userMatch) {
+          slack.chat.delete({token: SLACK_TOKEN, ts: message.ts, channel: message.channel.id}, function(err, data) {
+            if (err) {
+              result.fail_count++;
+            } else {
+              result.successful_count++;
             }
+          });
+        }
+        //code below loops through the messages chained to the parent timestamp and deletes them if they match the query
+        affixes.forEach(function(text) {
+          if (message[text] && message.type=="im" && message[text].text.toLowerCase() == query.toLowerCase()){
+            if ((userMatchSearch && matchUsers.includes(message[text].username)) || !userMatch) {
+              slack.chat.delete({token: SLACK_TOKEN, ts: message[text].ts, channel: message.channel.id}, function(err, data) {
+                if (err) {
+                  result.fail_count++;
+                } else {
+                  result.successful_count++;
+                }
+              });
+            }
+          }
         });
       });
       result.ok = result.successful_count > 0;
@@ -262,30 +290,24 @@ var self = module.exports = {
   },
   deleteChannelMessages: function(channel, query) { //SHOULD HAVE OPTIONAL ARGS - LIST OF USERS
     var deleteEverything = !(query);
+    var channel_id = '',
+      fn = this;
     return self.getChannelID(channel).then(function(channel_id) {
-
+      fn.channel_id = channel_id;
+      return self.searchChannelMessages(query, channel);
+    }).then(function(messages) {
       return new Promise(function(resolve, reject) {
-        slack.channels.history({token: SLACK_TOKEN, channel: channel_id, count: 10000}, function(err, data) {
-          var result = true;
-          data.messages.forEach(function(message) {
-            if (deleteEverything) {
-              slack.chat.delete({token: SLACK_TOKEN, ts: message.ts, channel: channel_id}, function(err) {
-                if (err)
-                result = false;
-              });
-            } else if (query.toLowerCase() == message.text.toLowerCase()) {
-              slack.chat.delete({token: SLACK_TOKEN, ts: message.ts, channel: channel_id}, function(err) {
-                if (err)
-                result = false;
-              });
-            }
-          });
-          resolve(result);
+        var result = true;
+        messages.forEach(function(message) {
+          if (query.toLowerCase() == message.text.toLowerCase()) {
+            slack.chat.delete({token: SLACK_TOKEN, ts: message.ts, channel: fn.channel_id}, function(err) {
+              if (err)
+              result = false;
+            });
+          }
         });
+        resolve(result);
       });
     });
-  },
-  deleteDirectMessages: function(query) {
-    return this.deleteMessages(query, "im", arguments);
   }
 };

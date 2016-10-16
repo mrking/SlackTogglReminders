@@ -3,6 +3,7 @@ var assert = require('chai').assert;
 var slackAPI = require("../app/Slack.js");
 
 var DEBUG_MESSAGE = "ZYXWVUTSRQPONMLKJIHGFEDCBA";
+// var DEBUG_MESSAGE = "Unable to find hours for slackbot";
 
 // These tests are not fully unit,
 // closer to being integration tests,
@@ -25,8 +26,8 @@ describe("Our slack API test account", function() {
       slackAPI.logoff();
       slackAPI.getBotName().then(function(name){
         expect(name.length).to.be.at.least(1);
-      });
-      return slackAPI.getBotName().then(function(name){
+        return slackAPI.getBotName()
+      }).then(function(name){
         expect(name.length).to.be.at.least(1);
       });
     });
@@ -35,8 +36,8 @@ describe("Our slack API test account", function() {
       slackAPI.getBotID().then(function(name){
         console.log("BOT BOT BOT ID " + name);
         expect(name.length).to.be.at.least(1);
-      });
-      return slackAPI.getBotID().then(function(name){
+        return slackAPI.getBotID()
+      }).then(function(name){
         console.log("BOT BOT BOT ID " + name);
         expect(name.length).to.be.at.least(1);
       });
@@ -68,29 +69,39 @@ describe("Our slack API test account", function() {
   });
   describe("posting a message", function() {
     it("should be able to post a message with or without channel details and delete the messages after", function() {
-      return slackAPI.postMessageToChannel(DEBUG_MESSAGE).then(function(result) {
+      var self = this;
+      return slackAPI.countChannelMessages(DEBUG_MESSAGE, process.env.SLACK_CHANNEL_NAME).then(function(count) {
+        console.log("CountChannelMessages:    ------- " + count);
+        self.initMessageCount = count;
+        return slackAPI.postMessageToChannel(DEBUG_MESSAGE);
+      }).then(function(result) {
         //TODO Count the messages before and after, assert messages to be cleared of debug_messages
         expect(result).to.equal(process.env.SLACK_CHANNEL_NAME);
         return slackAPI.postMessageToChannel(DEBUG_MESSAGE, process.env.SLACK_CHANNEL_NAME);
       }).then(function(result2) {
         expect(result2).to.equal(process.env.SLACK_CHANNEL_NAME);
+        return slackAPI.countChannelMessages(DEBUG_MESSAGE, process.env.SLACK_CHANNEL_NAME);
+      }).then(function(count) {
+        expect(count).to.equal(self.initMessageCount+2);
         return slackAPI.deleteChannelMessages(process.env.SLACK_CHANNEL_NAME, DEBUG_MESSAGE);
       }).then(function(deleteResponse) {
         expect(deleteResponse).to.be.true;
-        //TODO FIX This Test now that it returns the channel name it posted too
+        return slackAPI.countChannelMessages(DEBUG_MESSAGE, process.env.SLACK_CHANNEL_NAME);
+      }).then(function(deleteCount) {
+        expect(deleteCount).to.equal(self.initMessageCount);
       });
     });
     it("should be able to send a message to a user and delete old debug messages", function() {
       return slackAPI.getUser('new.overlord@gmail.com')
         .then(function(user) {
-          return slackAPI.postMessageToUser(DEBUG_MESSAGE, user.id)
+          return slackAPI.postMessageToUser(DEBUG_MESSAGE, user.id);
       }).then(function(result) {
           //AFTER TESTING CLEAR OFF MESSAGES WITH DEBUG_MESSAGE
-          var deleteResponse = slackAPI.deleteDirectMessages(DEBUG_MESSAGE);
+          return slackAPI.deleteDirectMessages(DEBUG_MESSAGE);
+      }).then(function(deleteResponse) {
           expect(deleteResponse).to.exist;
           expect(deleteResponse.successful_count).to.be.at.least(0);
           expect(result).to.be.true;
-
       }, function(err) {
         expect(err).to.exist;
       });
@@ -110,8 +121,8 @@ describe("Our slack API test account", function() {
       });
     });
     it("must send notifications of type x to both channel and user", function() {
-      slackAPI.sendNotification("slackbot", "USER_MIN_HOURS", DEBUG_MESSAGE, true);
-      slackAPI.sendNotification("slackbot", "USER_MIN_HOURS", DEBUG_MESSAGE, true);
+      slackAPI.sendNotification("slackbot", "USER_MIN_HOURS", DEBUG_MESSAGE, false);
+      slackAPI.sendNotification("slackbot", "USER_MIN_HOURS", DEBUG_MESSAGE, false);
     });
     it("should delete all the debug messages by select user(s)", function() {
       var deleteDMResponse = slackAPI.deleteDirectMessages(DEBUG_MESSAGE, 'togglebot4');
