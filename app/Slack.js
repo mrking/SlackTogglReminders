@@ -231,6 +231,19 @@ var self = module.exports = {
       });
     });
   },
+  countDirectMessages: function(query, user) {
+    return new Promise(function(resolve) {
+      var count = 0;
+      slack.im.history({token: SLACK_TOKEN, channel: user, count: 1000}, function(err, data) {
+        data.messages.forEach(function(message) {
+          if (message.text.toLowerCase() == query.toLowerCase()) {
+            count++;
+          }
+        });
+        resolve(count);
+      });
+    });
+  },
   deleteSlackMessage: function(channel_id, timestamp) {
     return new Promise(function(resolve, reject) {
       slack.chat.delete({token: SLACK_TOKEN, ts: message[text].ts, channel: message.channel.id}, function(err, data) {

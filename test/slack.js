@@ -88,13 +88,15 @@ describe("Our slack API test account", function() {
         expect(deleteResponse).to.be.true;
         return slackAPI.countChannelMessages(DEBUG_MESSAGE, process.env.SLACK_CHANNEL_NAME);
       }).then(function(deleteCount) {
-        expect(deleteCount).to.equal(self.initMessageCount);
+        expect(deleteCount).to.equal(0);
       });
     });
     it("should be able to send a message to a user and delete old debug messages", function() {
       return slackAPI.getUser('new.overlord@gmail.com')
         .then(function(user) {
-          return slackAPI.postMessageToUser(DEBUG_MESSAGE, user.id);
+          return slackAPI.postMessageToUser(DEBUG_MESSAGE, user.id).then(() => {
+            return slackAPI.postMessageToUser(DEBUG_MESSAGE, user.id);
+          });
       }).then(function(result) {
           //AFTER TESTING CLEAR OFF MESSAGES WITH DEBUG_MESSAGE
           return slackAPI.deleteDirectMessages(DEBUG_MESSAGE);
@@ -103,6 +105,14 @@ describe("Our slack API test account", function() {
           expect(deleteResponse.successful_count).to.be.at.least(0);
       }, function(err) {
         expect(err).to.exist;
+      });
+    });
+    it("should delete all the debug messages by select user(s)", function() {
+      slackAPI.deleteDirectMessages(DEBUG_MESSAGE, 'togglebot4').then(function(result) {
+        expect(result.successful_count).to.be.at.least(0);
+        return slackAPI.countDirectMessages(DEBUG_MESSAGE, slackAPI.getBotID());
+      }).then(function(count) {
+        expect(count).to.be.equal(0);
       });
     });
     it("must throw an error when posting to a non-existent or inaccessible channel", function() {
@@ -116,15 +126,14 @@ describe("Our slack API test account", function() {
         assert.fail(0, 1, 'Expected a denied channel to throw an error on message send' + channelsCannotPost[1]);
       }, function()
       {
-        // expected this final error... all good
+        return slackAPI.getChannelID(channelsCannotPost[0]);
+      }).then(function(id) {
+        expect(id).to.not.exist;
       });
     });
     it("must send notifications of type x to both channel and user", function() {
       slackAPI.sendNotification("slackbot", "USER_MIN_HOURS", DEBUG_MESSAGE, false);
       slackAPI.sendNotification("slackbot", "USER_MIN_HOURS", DEBUG_MESSAGE, false);
-    });
-    it("should delete all the debug messages by select user(s)", function() {
-      var deleteDMResponse = slackAPI.deleteDirectMessages(DEBUG_MESSAGE, 'togglebot4');
     });
   });
 });
