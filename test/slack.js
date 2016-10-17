@@ -3,6 +3,7 @@ var assert = require('chai').assert;
 var slackAPI = require("../app/Slack.js");
 
 var DEBUG_MESSAGE = "ZYXWVUTSRQPONMLKJIHGFEDCBA";
+var DEBUG_MESSAGE2 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 // var DEBUG_MESSAGE = "Unable to find hours for slackbot";
 
 // These tests are not fully unit,
@@ -20,7 +21,7 @@ describe("A slack channel", function() {
 });
 
 describe("Our slack API test account", function() {
-  this.timeout(10000);
+  this.timeout(17000);
   describe("user", function() {
     it("should authenticate and have a bot name", function() {
       slackAPI.logoff();
@@ -108,11 +109,22 @@ describe("Our slack API test account", function() {
       });
     });
     it("should delete all the debug messages by select user(s)", function() {
-      slackAPI.deleteDirectMessages(DEBUG_MESSAGE, 'togglebot4').then(function(result) {
+      return slackAPI.getUser('new.overlord@gmail.com')
+        .then(function(user) {
+          return slackAPI.postMessageToUser(DEBUG_MESSAGE2, user.id).then(() => {
+            return slackAPI.postMessageToUser(DEBUG_MESSAGE2, user.id);
+          });
+      }).then(function() {
+        return slackAPI.deleteDirectMessages(DEBUG_MESSAGE2, 'togglbot4');
+      }).then(function(result) {
+        console.log(result);
         expect(result.successful_count).to.be.at.least(0);
-        return slackAPI.countDirectMessages(DEBUG_MESSAGE, slackAPI.getBotID());
+        return slackAPI.countDirectMessages(DEBUG_MESSAGE2, slackAPI.getBotID());
       }).then(function(count) {
+        console.log("delete all dms by select user failed at count" + count);
         expect(count).to.be.equal(0);
+      }).catch(function(err) {
+        assert.fail("test did not delete all direct messages ");
       });
     });
     it("must throw an error when posting to a non-existent or inaccessible channel", function() {

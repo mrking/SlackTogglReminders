@@ -244,17 +244,6 @@ var self = module.exports = {
       });
     });
   },
-  deleteSlackMessage: function(channel_id, timestamp) {
-    return new Promise(function(resolve, reject) {
-      slack.chat.delete({token: SLACK_TOKEN, ts: message[text].ts, channel: message.channel.id}, function(err, data) {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(true);
-        }
-      });
-    });
-  },
   deleteDirectMessages: function(query) {
     var matchUsers = Array.prototype.slice.call(arguments, 1);
     var userMatchSearch = (matchUsers && matchUsers.length > 0);
@@ -262,7 +251,8 @@ var self = module.exports = {
     return self.searchMessages(query).then(function(messages) {
       return new Promise(function(resolve, reject) {
 
-        console.log('direct message query for ' + query + ' is successful');
+        console.log('direct message query for ' + query + ' is successful + userMatchSearch = ' + userMatchSearch);
+        console.log(matchUsers);
         var affixes = ['previous', 'previous_2', 'next', 'next_2'];
         var result = {
           successful_count: 0,
@@ -270,7 +260,11 @@ var self = module.exports = {
           ok: false
         };
         messages.matches.forEach(function(message) {
-          if (message.text.toLowerCase() == query.toLowerCase() && (userMatchSearch && matchUsers.includes(message[text].username)) || !userMatchSearch) {
+          if (userMatchSearch) {
+          console.log(message.username + matchUsers.indexOf(message.username));
+          console.log("DO WE GET HERE");
+          }
+          if (message.text.toLowerCase() == query.toLowerCase() && ((userMatchSearch && matchUsers.indexOf(message.username) >= 0) || !userMatchSearch)) {
             slack.chat.delete({token: SLACK_TOKEN, ts: message.ts, channel: message.channel.id}, function(err, data) {
               if (err) {
                 console.log(err);
@@ -284,7 +278,7 @@ var self = module.exports = {
           //code below loops through the messages chained to the parent timestamp and deletes them if they match the query
           affixes.forEach(function(text) {
             if (message[text] && message.type=="im" && message[text].text.toLowerCase() == query.toLowerCase()){
-              if ((userMatchSearch && matchUsers.includes(message[text].username)) || !userMatchSearch) {
+              if ((userMatchSearch && matchUsers.indexOf(message[text].username) >= 0) || !userMatchSearch) {
                 slack.chat.delete({token: SLACK_TOKEN, ts: message[text].ts, channel: message.channel.id}, function(err, data) {
                   if (err) {
                     console.log(err);
