@@ -101,7 +101,6 @@ describe("Our slack API test account", function() {
       }).then(function(deleteResponse) {
           expect(deleteResponse).to.exist;
           expect(deleteResponse.successful_count).to.be.at.least(0);
-          expect(result).to.be.true;
       }, function(err) {
         expect(err).to.exist;
       });
