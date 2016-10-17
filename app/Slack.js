@@ -252,7 +252,6 @@ var self = module.exports = {
       return new Promise(function(resolve, reject) {
 
         console.log('direct message query for ' + query + ' is successful + userMatchSearch = ' + userMatchSearch);
-        console.log(matchUsers);
         var affixes = ['previous', 'previous_2', 'next', 'next_2'];
         var result = {
           successful_count: 0,
@@ -260,18 +259,16 @@ var self = module.exports = {
           ok: false
         };
         messages.matches.forEach(function(message) {
-          if (userMatchSearch) {
-          console.log(message.username + matchUsers.indexOf(message.username));
-          console.log("DO WE GET HERE");
-          }
           if (message.text.toLowerCase() == query.toLowerCase() && ((userMatchSearch && matchUsers.indexOf(message.username) >= 0) || !userMatchSearch)) {
             slack.chat.delete({token: SLACK_TOKEN, ts: message.ts, channel: message.channel.id}, function(err, data) {
               if (err) {
+                console.log("DO WE GET HERE1-F");
                 console.log(err);
                 console.log(message.text);
                 result.fail_count++;
               } else {
                 result.successful_count++;
+                  console.log("DO WE GET HERE1-S - S: " + result.successful_count + " F: " + result.fail_count);
               }
             });
           }
@@ -281,6 +278,7 @@ var self = module.exports = {
               if ((userMatchSearch && matchUsers.indexOf(message[text].username) >= 0) || !userMatchSearch) {
                 slack.chat.delete({token: SLACK_TOKEN, ts: message[text].ts, channel: message.channel.id}, function(err, data) {
                   if (err) {
+                    console.log("DO WE GET HERE");
                     console.log(err);
                     console.log(message.text);
                     result.fail_count++;
@@ -293,10 +291,14 @@ var self = module.exports = {
           });
         });
         result.ok = result.successful_count > 0;
+        console.log("===================" + result.ok + "===================");
         resolve(result);
         return;
       });
 
+    }, function(err) {
+      console.error(err);
+      reject(err);
     });
   },
   deleteChannelMessages: function(channel, query) { //SHOULD HAVE OPTIONAL ARGS - LIST OF USERS
